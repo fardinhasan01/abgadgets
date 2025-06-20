@@ -221,9 +221,6 @@ const Index = () => {
           <div className="absolute inset-0 bg-black/40 rounded-xl"></div>
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center w-full">
-          <h2 className="text-3xl md:text-4xl font-extrabold font-mono text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-300 to-pink-400 drop-shadow-[0_2px_16px_rgba(59,130,246,0.7)]">
-            Welcome , Sir!
-          </h2>
         </div>
       </section>
 
