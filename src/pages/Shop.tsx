@@ -9,6 +9,7 @@ import { db } from '@/lib/firebase';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductCard from '@/components/ProductCard';
+import ProductDetailModal from '@/components/ProductDetailModal';
 import { Skeleton } from '@/components/ui/skeleton';
 import { products as localProducts } from '@/data/products';
 
@@ -23,6 +24,8 @@ const Shop = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [categories, setCategories] = useState(['All']);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -87,6 +90,16 @@ const Shop = () => {
   const handleDirectOrder = (product) => {
     addToCart(product);
     navigate('/checkout');
+  };
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+    setIsProductModalOpen(true);
+  };
+
+  const handleCloseProductModal = () => {
+    setIsProductModalOpen(false);
+    setSelectedProduct(null);
   };
 
   return (
@@ -170,6 +183,7 @@ const Shop = () => {
                 product={product}
                 handleAddToCart={handleAddToCart}
                 handleDirectOrder={handleDirectOrder}
+                onProductClick={handleProductClick}
               />
             ))}
           </div>
@@ -182,6 +196,15 @@ const Shop = () => {
           </div>
         )}
       </div>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isProductModalOpen}
+        onClose={handleCloseProductModal}
+        handleAddToCart={handleAddToCart}
+        handleDirectOrder={handleDirectOrder}
+      />
     </div>
   );
 };

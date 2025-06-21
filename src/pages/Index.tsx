@@ -9,6 +9,7 @@ import { db } from '@/lib/firebase';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
 import ProductCard from '@/components/ProductCard';
+import ProductDetailModal from '@/components/ProductDetailModal';
 import { getProductImageUrl } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { products as localProducts } from '@/data/products';
@@ -41,6 +42,8 @@ const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
 
   const banners = [
     {
@@ -129,6 +132,16 @@ const Index = () => {
       price: Number(product.offerPrice || product.price),
       originalPrice: product.originalPrice || product.mainPrice,
     }}});
+  };
+
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsProductModalOpen(true);
+  };
+
+  const handleCloseProductModal = () => {
+    setIsProductModalOpen(false);
+    setSelectedProduct(null);
   };
 
   // Helper for price formatting
@@ -295,7 +308,8 @@ const Index = () => {
                 <ProductCard 
                   product={product} 
                   handleAddToCart={handleAddToCart} 
-                  handleDirectOrder={handleDirectOrder} 
+                  handleDirectOrder={handleDirectOrder}
+                  onProductClick={handleProductClick}
                 />
               </div>
             ))}
@@ -329,7 +343,8 @@ const Index = () => {
                 <ProductCard 
                   product={product} 
                   handleAddToCart={handleAddToCart} 
-                  handleDirectOrder={handleDirectOrder} 
+                  handleDirectOrder={handleDirectOrder}
+                  onProductClick={handleProductClick}
                 />
               </div>
             ))}
@@ -363,7 +378,8 @@ const Index = () => {
                 <ProductCard 
                   product={product} 
                   handleAddToCart={handleAddToCart} 
-                  handleDirectOrder={handleDirectOrder} 
+                  handleDirectOrder={handleDirectOrder}
+                  onProductClick={handleProductClick}
                 />
               </div>
             ))}
@@ -399,6 +415,7 @@ const Index = () => {
                     product={product}
                     handleAddToCart={handleAddToCart}
                     handleDirectOrder={handleDirectOrder}
+                    onProductClick={handleProductClick}
                   />
                 </div>
               ))}
@@ -521,6 +538,15 @@ const Index = () => {
           </div>
         </div>
       </footer>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isProductModalOpen}
+        onClose={handleCloseProductModal}
+        handleAddToCart={handleAddToCart}
+        handleDirectOrder={handleDirectOrder}
+      />
     </div>
   );
 };

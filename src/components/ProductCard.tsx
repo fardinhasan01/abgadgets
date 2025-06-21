@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Star, Zap, Sparkles } from 'lucide-react';
+import { ShoppingCart, Star, Zap, Sparkles, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { getProductImageUrl, getProductImage } from '@/lib/utils';
 
@@ -29,9 +29,10 @@ interface ProductCardProps {
   product: Product;
   handleAddToCart: (product: Product) => void;
   handleDirectOrder: (product: Product) => void;
+  onProductClick?: (product: Product) => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, handleDirectOrder }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, handleDirectOrder, onProductClick }) => {
   // Handle both data structures: local products (price/originalPrice) and Firebase (mainPrice/offerPrice)
   const offerPrice = product.offerPrice || product.price;
   const mainPrice = product.mainPrice || product.originalPrice || product.price;
@@ -46,8 +47,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
     return String(num).split('').map(digit => bengaliNumbers[parseInt(digit, 10)]).join('');
   };
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't trigger if clicking on buttons
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    onProductClick?.(product);
+  };
+
   return (
-    <Card className="group relative overflow-hidden bg-white border-l-4 border-orange-500 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none">
+    <Card 
+      className="group relative overflow-hidden bg-white border-l-4 border-orange-500 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none cursor-pointer"
+      onClick={handleCardClick}
+    >
       {/* Premium Badge */}
       {product.featured && (
         <div className="absolute top-4 left-4 z-10">
@@ -57,6 +69,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
           </div>
         </div>
       )}
+      
+      {/* View Details Badge */}
+      <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="flex items-center gap-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+          <Eye className="w-3 h-3" />
+          View Details
+        </div>
+      </div>
       
       {/* Image Container */}
       <div className="relative overflow-hidden aspect-square bg-orange-50 rounded-t-2xl">
@@ -136,7 +156,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
         {/* Action Buttons */}
         <div className="space-y-3 pt-2">
           <Button
-            onClick={() => handleDirectOrder(product)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDirectOrder(product);
+            }}
             disabled={!product.inStock}
             className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-orange-200/50 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
           >
@@ -145,7 +168,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
           </Button>
           
           <Button
-            onClick={() => handleAddToCart(product)}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddToCart(product);
+            }}
             disabled={!product.inStock}
             variant="outline"
             className="w-full border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"

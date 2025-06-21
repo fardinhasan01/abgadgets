@@ -7,6 +7,7 @@ import { useCart } from "@/context/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "@/components/ProductCard";
+import ProductDetailModal from "@/components/ProductDetailModal";
 import { Input } from "@/components/ui/input";
 import { Search, Filter, Sparkles, Grid, List, ArrowRight } from "lucide-react";
 import { getProductImage } from "@/lib/utils";
@@ -40,6 +41,8 @@ const CategoriesPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid');
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const { addToCart } = useCart();
@@ -99,6 +102,16 @@ const CategoriesPage: React.FC = () => {
       price: Number(product.offerPrice || product.price),
       originalPrice: product.originalPrice,
     }}});
+  };
+
+  const handleProductClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsProductModalOpen(true);
+  };
+
+  const handleCloseProductModal = () => {
+    setIsProductModalOpen(false);
+    setSelectedProduct(null);
   };
 
   const filteredProducts = products.filter(product => {
@@ -229,6 +242,7 @@ const CategoriesPage: React.FC = () => {
                   product={product}
                   handleAddToCart={handleAddToCart}
                   handleDirectOrder={handleDirectOrder}
+                  onProductClick={handleProductClick}
                 />
               </div>
             ))}
@@ -245,6 +259,15 @@ const CategoriesPage: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* Product Detail Modal */}
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isProductModalOpen}
+        onClose={handleCloseProductModal}
+        handleAddToCart={handleAddToCart}
+        handleDirectOrder={handleDirectOrder}
+      />
     </div>
   );
 };

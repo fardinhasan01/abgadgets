@@ -347,9 +347,9 @@ const Checkout = () => {
             </Card>
           </div>
           
-          {/* Order Summary */}
+          {/* Order Summary - Mobile Optimized */}
           <div className="lg:col-span-1">
-            <Card className="bg-white/90 backdrop-blur-xl border border-orange-200/50 sticky top-24">
+            <Card className="bg-white/90 backdrop-blur-xl border border-orange-200/50 lg:sticky lg:top-24">
               <CardHeader>
                 <CardTitle className="text-orange-900 flex items-center gap-2">
                   <Truck className="w-5 h-5" />
@@ -426,25 +426,49 @@ const Checkout = () => {
                   </div>
                 </div>
 
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting || !agreedToTerms}
-                  className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-4 text-lg rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isSubmitting ? (
-                    <div className="flex items-center">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                      Processing...
-                    </div>
-                  ) : (
-                    <div className="flex items-center">
-                      <Shield className="w-5 h-5 mr-2" />
-                      Place Order
-                    </div>
-                  )}
-                </Button>
+                {/* Mobile Optimized Order Button */}
+                <div className="lg:hidden mt-6">
+                  <Button 
+                    type="submit" 
+                    disabled={isSubmitting || !agreedToTerms}
+                    className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-4 text-lg rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Processing...
+                      </div>
+                    ) : (
+                      <div className="flex items-center">
+                        <Shield className="w-5 h-5 mr-2" />
+                        Place Order
+                      </div>
+                    )}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
+
+            {/* Desktop Order Button */}
+            <div className="hidden lg:block">
+              <Button 
+                type="submit" 
+                disabled={isSubmitting || !agreedToTerms}
+                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white py-4 text-lg rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                    Processing...
+                  </div>
+                ) : (
+                  <div className="flex items-center">
+                    <Shield className="w-5 h-5 mr-2" />
+                    Place Order
+                  </div>
+                )}
+              </Button>
+            </div>
           </div>
         </form>
       </div>

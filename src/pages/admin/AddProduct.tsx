@@ -91,6 +91,27 @@ const AddProduct: React.FC = () => {
   const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        toast({ 
+          title: 'Invalid File Type', 
+          description: 'Please select an image file (JPEG, PNG, GIF, etc.)', 
+          variant: 'destructive' 
+        });
+        return;
+      }
+      
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast({ 
+          title: 'File Too Large', 
+          description: 'Please select an image smaller than 5MB', 
+          variant: 'destructive' 
+        });
+        return;
+      }
+      
       setMainImage({
         file,
         preview: URL.createObjectURL(file),
@@ -101,18 +122,75 @@ const AddProduct: React.FC = () => {
 
   const handleAdditionalImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const filesArray = Array.from(e.target.files).map((file) => ({
-        file,
-        preview: URL.createObjectURL(file),
-        status: "idle" as UploadStatus,
-      }));
-      setAdditionalImages(filesArray);
+      const filesArray = Array.from(e.target.files);
+      const validFiles: FileWithPreview[] = [];
+      
+      for (const file of filesArray) {
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+          toast({ 
+            title: 'Invalid File Type', 
+            description: `${file.name} is not an image file. Please select image files only.`, 
+            variant: 'destructive' 
+          });
+          continue;
+        }
+        
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          toast({ 
+            title: 'File Too Large', 
+            description: `${file.name} is too large. Please select images smaller than 5MB.`, 
+            variant: 'destructive' 
+          });
+          continue;
+        }
+        
+        validFiles.push({
+          file,
+          preview: URL.createObjectURL(file),
+          status: "idle" as UploadStatus,
+        });
+      }
+      
+      // Limit to 5 additional images
+      if (validFiles.length + additionalImages.length > 5) {
+        toast({ 
+          title: 'Too Many Images', 
+          description: 'You can upload a maximum of 5 additional images', 
+          variant: 'destructive' 
+        });
+        return;
+      }
+      
+      setAdditionalImages(prev => [...prev, ...validFiles]);
     }
   };
 
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      
+      // Validate file type
+      if (!file.type.startsWith('video/')) {
+        toast({ 
+          title: 'Invalid File Type', 
+          description: 'Please select a video file (MP4, MOV, etc.)', 
+          variant: 'destructive' 
+        });
+        return;
+      }
+      
+      // Validate file size (max 50MB)
+      if (file.size > 50 * 1024 * 1024) {
+        toast({ 
+          title: 'File Too Large', 
+          description: 'Please select a video smaller than 50MB', 
+          variant: 'destructive' 
+        });
+        return;
+      }
+      
       setVideo({
         file,
         preview: URL.createObjectURL(file),
@@ -247,6 +325,33 @@ const AddProduct: React.FC = () => {
       toast({ title: '❌ Error', description: 'Failed to add product. Check console for details.', variant: 'destructive' });
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Remove additional image
+  const removeAdditionalImage = (index: number) => {
+    setAdditionalImages(prev => {
+      const newImages = [...prev];
+      // Revoke object URL to prevent memory leaks
+      URL.revokeObjectURL(newImages[index].preview);
+      newImages.splice(index, 1);
+      return newImages;
+    });
+  };
+
+  // Remove video
+  const removeVideo = () => {
+    if (video) {
+      URL.revokeObjectURL(video.preview);
+      setVideo(null);
+    }
+  };
+
+  // Clear main image
+  const clearMainImage = () => {
+    if (mainImage) {
+      URL.revokeObjectURL(mainImage.preview);
+      setMainImage(null);
     }
   };
 
