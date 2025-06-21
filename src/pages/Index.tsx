@@ -196,29 +196,29 @@ const Index = () => {
       </div>
 
       {/* Horizontally scrolling categories banner */}
-      <div className="overflow-x-auto whitespace-nowrap scroll-smooth py-3 px-2 animate-scroll-slow bg-gradient-to-r from-orange-800 to-yellow-800 h-20 flex items-center">
+      <div className="overflow-x-auto whitespace-nowrap scroll-smooth py-3 px-2 animate-scroll-slow bg-gradient-to-r from-emerald-900 via-green-800 to-emerald-900 h-20 flex items-center">
         {categories.map(cat => (
-          <span key={cat} className="inline-block bg-orange-700/80 backdrop-blur-sm text-white px-4 py-2 rounded-xl mr-4 shadow-lg hover:bg-orange-600 transition-all duration-300">
+          <span key={cat} className="inline-block bg-gradient-to-r from-emerald-600/90 to-teal-600/90 backdrop-blur-sm text-white px-4 py-2 rounded-xl mr-4 shadow-lg hover:from-emerald-500 hover:to-teal-500 transition-all duration-300 border border-emerald-400/30">
             {cat}
           </span>
         ))}
       </div>
 
       {/* Categories Section */}
-      <section className="px-4 py-12 bg-gradient-to-br from-orange-900 to-yellow-800 text-white">
+      <section className="px-4 py-12 bg-gradient-to-br from-emerald-900 via-green-800 to-emerald-900 text-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-4xl font-bold mb-4 flex items-center justify-center">
-              <Sparkles className="w-8 h-8 mr-3 text-orange-400" />
+              <Sparkles className="w-8 h-8 mr-3 text-emerald-400" />
               Browse Categories
             </h2>
-            <p className="text-orange-200 text-lg">Discover our premium collection</p>
+            <p className="text-emerald-200 text-lg">Discover our premium collection</p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-8">
             {categories.map(category => (
               <button
                 key={category}
-                className={`bg-orange-800/80 backdrop-blur-sm rounded-2xl py-6 font-semibold hover:bg-orange-700 transition-all duration-300 cursor-pointer w-full transform hover:scale-105 ${activeCategory === category ? 'ring-2 ring-orange-400 bg-orange-700' : ''}`}
+                className={`bg-gradient-to-r from-emerald-600/80 to-teal-600/80 backdrop-blur-sm rounded-2xl py-6 font-semibold hover:from-emerald-500 hover:to-teal-500 transition-all duration-300 cursor-pointer w-full transform hover:scale-105 border border-emerald-400/30 shadow-lg ${activeCategory === category ? 'ring-2 ring-emerald-400 from-emerald-500 to-teal-500' : ''}`}
                 onClick={() => setActiveCategory(category)}
               >
                 {category}
@@ -229,7 +229,7 @@ const Index = () => {
             {filteredProducts.map(product => (
               <div
                 key={product.id}
-                className="bg-orange-800/60 backdrop-blur-sm rounded-2xl p-4 shadow-lg cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-orange-500/20"
+                className="bg-gradient-to-r from-emerald-600/60 to-teal-600/60 backdrop-blur-sm rounded-2xl p-4 shadow-lg cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-emerald-500/20 border border-emerald-400/30"
               >
                 <img
                   src={getProductImageUrl(product.imageUrl || product.mainImageUrl || product.mainImage || product.image, 'medium')}
@@ -247,18 +247,18 @@ const Index = () => {
                   {(product.offerPrice && product.mainPrice && product.offerPrice < product.mainPrice) || 
                    (product.price && product.originalPrice && product.price < product.originalPrice) ? (
                     <>
-                      <span className="offer-price text-lg font-bold text-orange-400">
+                      <span className="offer-price text-lg font-bold text-emerald-300">
                         ৳{product.offerPrice || product.price}
                       </span>
-                      <span className="main-price text-orange-300 line-through text-base">
+                      <span className="main-price text-emerald-200 line-through text-base">
                         ৳{product.mainPrice || product.originalPrice}
                       </span>
-                      <span className="discount text-yellow-400 text-sm font-semibold">
+                      <span className="discount text-yellow-300 text-sm font-semibold">
                         ({Math.round((((product.mainPrice || product.originalPrice) - (product.offerPrice || product.price)) / (product.mainPrice || product.originalPrice)) * 100)}% off)
                       </span>
                     </>
                   ) : (
-                    <span className="offer-price text-lg font-bold text-orange-400">
+                    <span className="offer-price text-lg font-bold text-emerald-300">
                       ৳{product.price || product.mainPrice}
                     </span>
                   )}
@@ -502,9 +502,9 @@ const Index = () => {
             <div>
               <h3 className="text-lg font-semibold text-orange-800 mb-4">Contact Us</h3>
               <ul className="space-y-2 text-orange-600">
-                <li className="flex items-center"><Mail className="w-4 h-4 mr-2" />abgadgets@email.com</li>
-                <li className="flex items-center"><Phone className="w-4 h-4 mr-2" />+123 456 7890</li>
-                <li className="flex items-center"><MapPin className="w-4 h-4 mr-2" />Dhaka, Bangladesh</li>
+                <li className="flex items-center"><Mail className="w-4 h-4 mr-2" />saifuldipu8@gmail.com</li>
+                <li className="flex items-center"><Phone className="w-4 h-4 mr-2" />01706003435</li>
+                <li className="flex items-center"><MapPin className="w-4 h-4 mr-2" />Dhanmondi, Dhaka, Bangladesh</li>
               </ul>
             </div>
             <div>
@@ -517,7 +517,7 @@ const Index = () => {
             </div>
           </div>
           <div className="mt-12 border-t border-orange-200/50 pt-8 text-center text-orange-600">
-            <p>&copy; 2024 AB Gadgets. All rights reserved.</p>
+            <p>2025 AB Gadgets. All rights reserved.</p>
           </div>
         </div>
       </footer>
