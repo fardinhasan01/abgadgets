@@ -58,11 +58,11 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-[#f0f4f8] via-[#fdf6f0] to-[#fff] text-[#222] flex items-center justify-center">
       {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-4 -left-4 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-1/2 -right-4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute -top-4 -left-4 w-72 h-72 bg-blue-200/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-1/2 -right-4 w-96 h-96 bg-cyan-200/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
       </div>
 
       <div className="w-full max-w-md px-4 relative z-10">
@@ -78,22 +78,22 @@ const AdminLogin = () => {
           <Link to="/" className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
             AB GADGETS
           </Link>
-          <p className="text-gray-400 mt-2">Admin Portal</p>
+          <p className="text-gray-600 mt-2">Admin Portal</p>
         </div>
 
         {/* Login Card */}
-        <Card className="bg-gray-800/30 backdrop-blur-lg border border-blue-500/20">
+        <Card className="bg-white/80 backdrop-blur-lg border border-blue-200/30">
           <CardHeader className="text-center">
-            <div className="bg-gradient-to-r from-blue-600 to-cyan-600 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-white" />
+            <div className="bg-gradient-to-r from-blue-200 to-cyan-200 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 text-blue-600" />
             </div>
-            <CardTitle className="text-2xl font-bold text-white">Admin Login</CardTitle>
-            <p className="text-gray-400">Sign in with your Firebase credentials</p>
+            <CardTitle className="text-2xl font-bold text-blue-700">Admin Login</CardTitle>
+            <p className="text-gray-600">Sign in with your Firebase credentials</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
-                <Label htmlFor="email" className="text-gray-300">Email Address</Label>
+                <Label htmlFor="email" className="text-gray-700">Email Address</Label>
                 <div className="relative mt-1">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
@@ -103,14 +103,14 @@ const AdminLogin = () => {
                     value={formData.email}
                     onChange={handleInputChange}
                     required
-                    className="pl-10 bg-gray-700/50 border-gray-600 text-white focus:border-blue-500"
+                    className="pl-10 bg-white border-blue-200 text-[#222] focus:border-blue-400"
                     placeholder="Enter your admin email"
                   />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="password" className="text-gray-300">Password</Label>
+                <Label htmlFor="password" className="text-gray-700">Password</Label>
                 <div className="relative mt-1">
                   <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                   <Input
@@ -120,7 +120,7 @@ const AdminLogin = () => {
                     value={formData.password}
                     onChange={handleInputChange}
                     required
-                    className="pl-10 pr-10 bg-gray-700/50 border-gray-600 text-white focus:border-blue-500"
+                    className="pl-10 pr-10 bg-white border-blue-200 text-[#222] focus:border-blue-400"
                     placeholder="Enter your password"
                   />
                   <button
@@ -136,7 +136,7 @@ const AdminLogin = () => {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-3 rounded-lg font-semibold transition-all duration-300"
+                className="w-full bg-gradient-to-r from-blue-200 to-cyan-200 hover:from-blue-300 hover:to-cyan-300 text-[#222] py-3 rounded-lg font-semibold transition-all duration-300"
               >
                 {isLoading ? 'Signing In...' : 'Sign In'}
               </Button>

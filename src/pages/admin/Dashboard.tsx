@@ -30,6 +30,7 @@ import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth, db, storage } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import AddProduct from './AddProduct';
+import { getProductImageUrl } from '@/lib/utils';
 
 interface Order {
   id: string;
@@ -397,7 +398,7 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#f0f4f8] via-[#fdf6f0] to-[#fff] text-[#222] flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div>
           <p className="text-gray-400">Loading...</p>
@@ -429,9 +430,9 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-[#f0f4f8] via-[#fdf6f0] to-[#fff] text-[#222]">
       {/* Header */}
-      <header className="bg-black/30 backdrop-blur-lg border-b border-blue-500/20 sticky top-0 z-50">
+      <header className="bg-white/70 backdrop-blur-lg border-b border-blue-200/30 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -443,7 +444,7 @@ const AdminDashboard = () => {
               <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent mr-8">
                 AB GADGETS
               </Link>
-              <span className="text-gray-400">Admin Dashboard</span>
+              <span className="text-gray-600">Admin Dashboard</span>
             </div>
             <Button
               onClick={handleLogout}
@@ -480,15 +481,15 @@ const AdminDashboard = () => {
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {stats.map((stat, index) => (
-                <Card key={index} className="bg-gray-800/30 backdrop-blur-lg border border-blue-500/20">
+                <Card key={index} className="bg-white/80 backdrop-blur-lg border border-blue-200/30">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-gray-400 text-sm">{stat.title}</p>
-                        <p className="text-2xl font-bold text-white">{stat.value}</p>
+                        <p className="text-gray-600 text-sm">{stat.title}</p>
+                        <p className="text-2xl font-bold text-blue-700">{stat.value}</p>
                       </div>
-                      <div className={`bg-gradient-to-r ${stat.color} w-12 h-12 rounded-full flex items-center justify-center`}>
-                        <stat.icon className="w-6 h-6 text-white" />
+                      <div className={`bg-gradient-to-r ${stat.color.replace('from-', 'from-blue-200 ').replace('to-', 'to-cyan-200 ')} w-12 h-12 rounded-full flex items-center justify-center`}>
+                        <stat.icon className="w-6 h-6 text-blue-600" />
                       </div>
                     </div>
                   </CardContent>
@@ -500,10 +501,7 @@ const AdminDashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="bg-gray-800/30 backdrop-blur-lg border border-blue-500/20">
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center">
-                    <TrendingUp className="w-5 h-5 mr-2" />
-                    Top Categories
-                  </CardTitle>
+                  <CardTitle className="text-white">Top Categories</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {['Headphones', 'Selfie Sticks', 'Microphones', 'Toys'].map((category) => (
@@ -576,7 +574,17 @@ const AdminDashboard = () => {
                   {filteredAdminProducts.map((product) => (
                     <TableRow key={product.id} className="border-gray-700">
                       <TableCell>
-                        <img src={product.mainImage} alt={product.name} className="w-12 h-12 object-cover rounded border border-gray-700" />
+                        <img 
+                          src={getProductImageUrl(product.mainImage, 'thumbnail')} 
+                          alt={product.name} 
+                          className="w-12 h-12 object-cover rounded border border-gray-700"
+                          loading="lazy"
+                          onError={(e) => {
+                            // Fallback to original image if optimization fails
+                            const target = e.target as HTMLImageElement;
+                            target.src = product.mainImage;
+                          }}
+                        />
                       </TableCell>
                       <TableCell className="text-white">
                         <div>

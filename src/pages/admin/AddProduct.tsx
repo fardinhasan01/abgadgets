@@ -252,15 +252,15 @@ const AddProduct: React.FC = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-8 bg-gray-900/80 p-8 rounded-lg border border-blue-500/20 backdrop-blur-lg max-w-2xl mx-auto">
-        <h2 className="text-2xl font-bold text-blue-300 mb-4">Add New Product</h2>
+      <form onSubmit={handleSubmit} className="space-y-8 bg-white/80 p-8 rounded-lg border border-blue-200/30 backdrop-blur-lg max-w-2xl mx-auto">
+        <h2 className="text-2xl font-bold text-blue-700 mb-4">Add New Product</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <Label className="text-gray-300">Product Name</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter product name" required className="w-full bg-gray-800 border border-gray-700 text-white focus:border-blue-500 mt-1" />
+            <Label className="text-gray-700">Product Name</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter product name" required className="w-full bg-white border-blue-200 text-[#222] focus:border-blue-400 mt-1" />
           </div>
           <div>
-            <Label className="text-gray-300">Main Price (৳)</Label>
+            <Label className="text-gray-700">Main Price (৳)</Label>
             <Input
               type="number"
               inputMode="decimal"
@@ -269,11 +269,11 @@ const AddProduct: React.FC = () => {
               onChange={(e) => setMainPrice(e.target.value)}
               placeholder="e.g., 1200"
               required
-              className="w-full bg-gray-700/50 border-gray-600 text-white focus:border-blue-500 mt-1"
+              className="w-full bg-white border-blue-200 text-[#222] focus:border-blue-400 mt-1"
             />
           </div>
           <div>
-            <Label className="text-gray-300">Offer Price (৳)</Label>
+            <Label className="text-gray-700">Offer Price (৳)</Label>
             <Input
               type="number"
               inputMode="decimal"
@@ -281,30 +281,30 @@ const AddProduct: React.FC = () => {
               value={offerPrice}
               onChange={(e) => setOfferPrice(e.target.value)}
               placeholder="Optional offer price"
-              className="w-full bg-gray-700/50 border-gray-600 text-white focus:border-blue-500 mt-1"
+              className="w-full bg-white border-blue-200 text-[#222] focus:border-blue-400 mt-1"
             />
           </div>
           <div>
-            <Label className="text-gray-300">In Stock</Label>
-            <div className="flex items-center gap-2 mt-2 text-gray-300">
-              <input type="checkbox" id="inStock" checked={inStock} onChange={(e) => setInStock(e.target.checked)} className="h-4 w-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500" />
+            <Label className="text-gray-700">In Stock</Label>
+            <div className="flex items-center gap-2 mt-2 text-gray-700">
+              <input type="checkbox" id="inStock" checked={inStock} onChange={(e) => setInStock(e.target.checked)} className="h-4 w-4 rounded border-blue-200 bg-white text-blue-500 focus:ring-blue-400" />
               <label htmlFor="inStock" className="cursor-pointer">{inStock ? 'In Stock' : 'Out of Stock'}</label>
             </div>
           </div>
         </div>
         <div>
-          <Label className="text-gray-300">Description</Label>
-          <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short description" rows={3} className="w-full bg-gray-800 border border-gray-700 text-white focus:border-blue-500 mt-1 rounded p-2" />
+          <Label className="text-gray-700">Description</Label>
+          <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short description" rows={3} className="w-full bg-white border-blue-200 text-[#222] focus:border-blue-400 mt-1 rounded p-2" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <Label className="text-gray-300">Main Image</Label>
+            <Label className="text-gray-700">Main Image</Label>
             <Input
               type="file"
               accept="image/*"
               onChange={handleMainImageChange}
               required
-              className="w-full bg-gray-800 border border-gray-700 text-white focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mt-1"
+              className="w-full bg-white border-blue-200 text-[#222] focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mt-1"
               disabled={isSubmitting}
             />
             {mainImage && (
@@ -312,9 +312,9 @@ const AddProduct: React.FC = () => {
                 <img
                   src={mainImage.url || mainImage.preview}
                   alt="Main Preview"
-                  className="w-32 h-32 object-cover rounded-lg border border-gray-700"
+                  className="w-32 h-32 object-cover rounded-lg border border-blue-200"
                 />
-                <div className="text-xs mt-1 text-gray-400">
+                <div className="text-xs mt-1 text-gray-500">
                   {mainImage.status === "uploading" && "Uploading..."}
                   {mainImage.status === "success" && "Uploaded"}
                   {mainImage.status === "error" && (
@@ -325,7 +325,7 @@ const AddProduct: React.FC = () => {
                       href={mainImage.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block text-blue-400 underline"
+                      className="block text-blue-500 underline"
                     >
                       View on Cloudinary
                     </a>
@@ -335,13 +335,13 @@ const AddProduct: React.FC = () => {
             )}
           </div>
           <div>
-            <Label className="text-gray-300">Additional Images</Label>
+            <Label className="text-gray-700">Additional Images</Label>
             <Input
               type="file"
               accept="image/*"
               multiple
               onChange={handleAdditionalImagesChange}
-              className="w-full bg-gray-800 border border-gray-700 text-white focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mt-1"
+              className="w-full bg-white border-blue-200 text-[#222] focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mt-1"
               disabled={isSubmitting}
             />
             <div className="flex gap-2 mt-2 flex-wrap">
@@ -349,10 +349,10 @@ const AddProduct: React.FC = () => {
                 <div key={i} className="flex flex-col items-center">
                   <img
                     src={img.url || img.preview}
-                    className="w-16 h-16 object-cover rounded border border-gray-700"
+                    className="w-16 h-16 object-cover rounded border border-blue-200"
                     alt={`Additional preview ${i + 1}`}
                   />
-                  <div className="text-xs text-gray-400">
+                  <div className="text-xs text-gray-500">
                     {img.status === "uploading" && "Uploading..."}
                     {img.status === "success" && "Uploaded"}
                     {img.status === "error" && (
@@ -363,7 +363,7 @@ const AddProduct: React.FC = () => {
                         href={img.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="block text-blue-400 underline"
+                        className="block text-blue-500 underline"
                       >
                         View
                       </a>
@@ -376,12 +376,12 @@ const AddProduct: React.FC = () => {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <Label className="text-gray-300">Video (optional)</Label>
+            <Label className="text-gray-700">Video (optional)</Label>
             <Input
               type="file"
               accept="video/*"
               onChange={handleVideoChange}
-              className="w-full bg-gray-800 border border-gray-700 text-white focus:border-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mt-1"
+              className="w-full bg-white border-blue-200 text-[#222] focus:border-blue-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mt-1"
               disabled={isSubmitting}
             />
             {video && (
@@ -389,9 +389,9 @@ const AddProduct: React.FC = () => {
                 <video
                   src={video.url || video.preview}
                   controls
-                  className="w-48 rounded border border-gray-700"
+                  className="w-48 rounded border border-blue-200"
                 />
-                <div className="text-xs mt-1 text-gray-400">
+                <div className="text-xs mt-1 text-gray-500">
                   {video.status === "uploading" && "Uploading..."}
                   {video.status === "success" && "Uploaded"}
                   {video.status === "error" && (
@@ -402,7 +402,7 @@ const AddProduct: React.FC = () => {
                       href={video.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="block text-blue-400 underline"
+                      className="block text-blue-500 underline"
                     >
                       View on Cloudinary
                     </a>
@@ -412,8 +412,8 @@ const AddProduct: React.FC = () => {
             )}
           </div>
           <div>
-            <Label className="text-gray-300">Tags</Label>
-            <div className="flex gap-4 flex-wrap mt-2 text-gray-300">
+            <Label className="text-gray-700">Tags</Label>
+            <div className="flex gap-4 flex-wrap mt-2 text-gray-700">
               {TAGS.map((tag) => (
                 <label
                   key={tag}
@@ -424,7 +424,7 @@ const AddProduct: React.FC = () => {
                     value={tag}
                     checked={tags.includes(tag)}
                     onChange={() => handleTagChange(tag)}
-                    className="h-4 w-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-blue-200 bg-white text-blue-500 focus:ring-blue-400"
                     disabled={isSubmitting}
                   />
                   {tag}
@@ -436,7 +436,7 @@ const AddProduct: React.FC = () => {
         <Button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-3 rounded-lg font-semibold transition-all duration-300"
+          className="w-full bg-gradient-to-r from-blue-200 to-cyan-200 hover:from-blue-300 hover:to-cyan-300 text-[#222] py-3 rounded-lg font-semibold transition-all duration-300"
         >
           {isSubmitting ? "Uploading..." : "Add Product"}
         </Button>
