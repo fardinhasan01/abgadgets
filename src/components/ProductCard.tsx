@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Star, Zap, Sparkles, Eye } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { getProductImageUrl, getProductImage } from '@/lib/utils';
+import { getProductImageUrl } from '@/lib/utils';
 
 interface Product {
   id: string;
@@ -18,6 +18,7 @@ interface Product {
   image?: string;
   mainImage?: string;
   imageUrl?: string;
+  mainImageUrl?: string;
   description?: string;
   inStock: boolean;
   featured?: boolean;
@@ -36,7 +37,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
   // Handle both data structures: local products (price/originalPrice) and Firebase (mainPrice/offerPrice)
   const offerPrice = product.offerPrice || product.price;
   const mainPrice = product.mainPrice || product.originalPrice || product.price;
-  const imageSrc = getProductImage(product);
 
   const hasDiscount = offerPrice && mainPrice && offerPrice < mainPrice;
   const discountPercentage = hasDiscount ? Math.round(((mainPrice - offerPrice) / mainPrice) * 100) : 0;
@@ -81,14 +81,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
       {/* Image Container */}
       <div className="relative overflow-hidden aspect-square bg-orange-50 rounded-t-2xl">
         <img
-          src={getProductImageUrl(imageSrc, 'large')}
+          src={
+            product.mainImageUrl ||
+            (Array.isArray(product.image) ? product.image[0] : product.image) ||
+            "/placeholder.jpg"
+          }
           alt={product.name}
-          className="w-full h-full object-contain object-center transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
           loading="lazy"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
             // Fallback to placeholder if any error occurs
-            target.src = '/placeholder.svg';
+            target.src = '/placeholder.jpg';
             target.onerror = null; // Prevent infinite loops
           }}
         />

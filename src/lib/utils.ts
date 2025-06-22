@@ -102,6 +102,10 @@ export function getProductImageUrl(
  * @returns The best available image URL or placeholder
  */
 export function getProductImage(product: any): string {
-  const imageUrl = product.imageUrl || product.mainImage || product.image;
-  return imageUrl || '/placeholder.svg';
+  const imageUrl = product.mainImageUrl || 
+    (Array.isArray(product.image) ? product.image[0] : product.image) ||
+    product.imageUrl || 
+    product.mainImage || 
+    product.image;
+  return imageUrl || '/placeholder.jpg';
 }

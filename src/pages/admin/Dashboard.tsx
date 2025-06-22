@@ -65,6 +65,7 @@ interface Product {
   name: string;
   mainPrice: number;
   mainImage: string;
+  mainImageUrl?: string;
   originalPrice?: number;
   discount?: number;
   category: string;
@@ -575,14 +576,19 @@ const AdminDashboard = () => {
                     <TableRow key={product.id} className="border-gray-700">
                       <TableCell>
                         <img 
-                          src={getProductImageUrl(product.mainImage, 'thumbnail')} 
+                          src={
+                            product.mainImageUrl ||
+                            (Array.isArray(product.image) ? product.image[0] : product.image) ||
+                            "/placeholder.jpg"
+                          } 
                           alt={product.name} 
-                          className="w-12 h-12 object-cover rounded border border-gray-700"
+                          className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
                           loading="lazy"
                           onError={(e) => {
-                            // Fallback to original image if optimization fails
+                            // Fallback to placeholder if any error occurs
                             const target = e.target as HTMLImageElement;
-                            target.src = product.mainImage;
+                            target.src = '/placeholder.jpg';
+                            target.onerror = null;
                           }}
                         />
                       </TableCell>

@@ -10,7 +10,6 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { useCart } from '@/context/CartContext';
-import { getProductImageUrl, getProductImage } from '@/lib/utils';
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -71,7 +70,7 @@ const Checkout = () => {
   }, [formData.deliveryArea, deliveryLocation]);
 
   const totalProductCost = cartItems.reduce((sum, item) => {
-    const price = Number(item.mainPrice || item.price);
+    const price = Number(item.offerPrice || item.mainPrice || item.price);
     const qty = item.quantity || 1;
     return sum + (isNaN(price) ? 0 : price * qty);
   }, 0);
@@ -114,9 +113,9 @@ const Checkout = () => {
       const orderProducts = cartItems.map(item => ({
         id: item.id,
         name: item.name,
-        price: Number(item.mainPrice || item.price),
+        price: Number(item.offerPrice || item.mainPrice || item.price),
         quantity: item.quantity || 1,
-        imageUrl: getProductImage(item),
+        mainImageUrl: item.mainImageUrl,
       }));
       const orderData = {
         products: orderProducts,
@@ -360,27 +359,37 @@ const Checkout = () => {
                 {/* Order Items */}
                 <div className="space-y-3 max-h-64 overflow-y-auto">
                   {cartItems.map((item) => {
-                    const imageSrc = getProductImage(item);
-                    const price = Number(item.mainPrice || item.price);
+                    const offerPrice = Number(item.offerPrice || item.mainPrice || item.price);
+                    const mainPrice = Number(item.mainPrice || item.price);
+                    const hasDiscount = item.offerPrice && item.mainPrice && item.offerPrice < item.mainPrice;
                     
                     return (
                       <div key={item.id} className="flex items-center space-x-3 p-3 bg-orange-50 rounded-lg">
                         <div className="w-12 h-12 bg-white rounded-lg flex-shrink-0">
                           <img
-                            src={getProductImageUrl(imageSrc, 'thumbnail')}
+                            src={
+                              item.mainImageUrl ||
+                              (Array.isArray(item.image) ? item.image[0] : item.image) ||
+                              "/placeholder.jpg"
+                            }
                             alt={item.name}
-                            className="w-full h-full object-contain rounded-lg"
+                            className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
                             loading="lazy"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
-                              target.src = '/placeholder.svg';
+                              target.src = '/placeholder.jpg';
                               target.onerror = null;
                             }}
                           />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-medium text-orange-900 truncate">{item.name}</h4>
-                          <p className="text-sm text-orange-600">৳{price}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-bold text-orange-600">৳{offerPrice}</p>
+                            {hasDiscount && (
+                              <span className="text-xs text-gray-400 line-through">৳{mainPrice}</span>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Button

@@ -53,8 +53,10 @@ export const CartProvider = ({ children }) => {
         const item = {
           id: product.id,
           name: product.name,
-          mainPrice: Number(product.mainPrice),
+          mainPrice: Number(product.mainPrice || product.price),
+          offerPrice: Number(product.offerPrice || product.price),
           quantity: 1,
+          mainImageUrl: product.mainImageUrl,
           imageUrl: product.mainImage || product.imageUrl || product.image,
         };
         return [...prev, item];

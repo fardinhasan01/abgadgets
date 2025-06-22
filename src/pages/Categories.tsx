@@ -27,6 +27,7 @@ interface Product {
   image?: string;
   mainImage?: string;
   imageUrl?: string;
+  mainImageUrl?: string;
   description?: string;
   inStock: boolean;
   featured?: boolean;
@@ -85,9 +86,10 @@ const CategoriesPage: React.FC = () => {
     addToCart({
       id: product.id,
       name: product.name,
-      mainPrice: Number(product.mainPrice),
+      mainPrice: Number(product.mainPrice || product.price),
+      offerPrice: Number(product.offerPrice || product.price),
       quantity: 1,
-      imageUrl: getProductImage(product),
+      mainImageUrl: product.mainImageUrl,
     });
     toast({ title: '✅ Product added to cart successfully!' });
   };
@@ -98,7 +100,7 @@ const CategoriesPage: React.FC = () => {
       name: product.name,
       mainPrice: Number(product.mainPrice || product.price),
       quantity: 1,
-      imageUrl: getProductImage(product),
+      mainImageUrl: product.mainImageUrl,
       price: Number(product.offerPrice || product.price),
       originalPrice: product.originalPrice,
     }}});

@@ -23,6 +23,7 @@ interface Product {
   category: string;
   stock: number;
   image: string;
+  mainImageUrl?: string;
   description?: string;
   inStock: boolean;
   featured?: boolean;
@@ -245,14 +246,19 @@ const Index = () => {
                 className="bg-gradient-to-r from-emerald-600/60 to-teal-600/60 backdrop-blur-sm rounded-2xl p-4 shadow-lg cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-emerald-500/20 border border-emerald-400/30"
               >
                 <img
-                  src={getProductImageUrl(product.imageUrl || product.mainImageUrl || product.mainImage || product.image, 'medium')}
+                  src={
+                    product.mainImageUrl ||
+                    (Array.isArray(product.image) ? product.image[0] : product.image) ||
+                    "/placeholder.jpg"
+                  }
                   alt={product.name}
-                  className="w-full h-32 object-contain mb-3 rounded-lg"
+                  className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
                   loading="lazy"
                   onError={(e) => {
-                    // Fallback to original image if optimization fails
+                    // Fallback to placeholder if any error occurs
                     const target = e.target as HTMLImageElement;
-                    target.src = product.imageUrl || product.mainImageUrl || product.mainImage || product.image;
+                    target.src = '/placeholder.jpg';
+                    target.onerror = null;
                   }}
                 />
                 <h3 className="text-white font-semibold line-clamp-2 text-sm">{product.name}</h3>

@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
-import { getProductImageUrl, getProductImage } from '@/lib/utils';
 
 const Cart = () => {
   const { cart: cartItems, updateQuantity, removeFromCart, setCart: setCartItems } = useCart();
@@ -94,8 +93,9 @@ const Cart = () => {
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-6">
               {cartItems.map((item, index) => {
-                const imageSrc = getProductImage(item);
-                const price = Number(item.offerPrice || item.mainPrice);
+                const offerPrice = Number(item.offerPrice || item.mainPrice);
+                const mainPrice = Number(item.mainPrice || item.price);
+                const hasDiscount = item.offerPrice && item.mainPrice && item.offerPrice < item.mainPrice;
 
                 return (
                   <Card 
@@ -107,20 +107,29 @@ const Cart = () => {
                       <div className="flex items-center space-x-6">
                         <div className="relative w-24 h-24 bg-orange-50 rounded-2xl flex-shrink-0">
                           <img
-                            src={getProductImageUrl(imageSrc, 'small')}
+                            src={
+                              item.mainImageUrl ||
+                              (Array.isArray(item.image) ? item.image[0] : item.image) ||
+                              "/placeholder.jpg"
+                            }
                             alt={item.name}
-                            className="w-full h-full object-contain rounded-2xl"
+                            className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
                             loading="lazy"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
-                              target.src = '/placeholder.svg';
+                              target.src = '/placeholder.jpg';
                               target.onerror = null; // Prevent loops
                             }}
                           />
                         </div>
                         <div className="flex-1">
                           <h3 className="text-xl font-bold text-orange-900 mb-2 line-clamp-2">{item.name}</h3>
-                          <p className="text-orange-600 font-bold text-2xl">৳{new Intl.NumberFormat('en-US').format(price)}</p>
+                          <div className="flex items-center gap-3">
+                            <p className="text-orange-600 font-bold text-2xl">৳{new Intl.NumberFormat('en-US').format(offerPrice)}</p>
+                            {hasDiscount && (
+                              <span className="text-gray-400 line-through text-lg">৳{new Intl.NumberFormat('en-US').format(mainPrice)}</span>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center space-x-3">
                           <Button

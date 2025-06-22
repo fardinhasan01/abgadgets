@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Star, X, Send, User, Calendar } from 'lucide-react';
-import { getProductImageUrl, getProductImage } from '@/lib/utils';
+import { getProductImageUrl } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 interface Review {
@@ -29,6 +29,7 @@ interface Product {
   image?: string;
   mainImage?: string;
   imageUrl?: string;
+  mainImageUrl?: string;
   description?: string;
   inStock: boolean;
   featured?: boolean;
@@ -221,13 +222,17 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           <div className="space-y-4">
             <div className="aspect-square bg-orange-50 rounded-2xl overflow-hidden">
               <img
-                src={getProductImageUrl(getProductImage(product), 'large')}
+                src={
+                  product.mainImageUrl ||
+                  (Array.isArray(product.image) ? product.image[0] : product.image) ||
+                  "/placeholder.jpg"
+                }
                 alt={product.name}
-                className="w-full h-full object-contain object-center"
+                className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
                 loading="lazy"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = '/placeholder.svg';
+                  target.src = '/placeholder.jpg';
                   target.onerror = null;
                 }}
               />
