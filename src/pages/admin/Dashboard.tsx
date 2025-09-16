@@ -30,7 +30,7 @@ import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth, db, storage } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
 import AddProduct from './AddProduct';
-import { getProductImageUrl } from '@/lib/utils';
+import { getProductImageUrl, getPrice } from '@/lib/utils';
 
 interface Order {
   id: string;
@@ -47,6 +47,8 @@ interface Order {
     name: string;
     price: number;
     quantity: number;
+    offerPrice?: number;
+    mainPrice?: number;
   }>;
   paymentMethod: string;
   bkashNumber?: string;
@@ -124,19 +126,27 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     // Check Firebase authentication
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubAuth = onAuthStateChanged(auth, (user) => {
       if (user) {
         setIsAuthenticated(true);
-        loadOrders();
-        loadProducts();
+        const unsubOrders = loadOrders();
+        const unsubProducts = loadProductsRealtime();
+        setLoading(false);
+        // Cleanup listeners when auth changes away from logged-in state
+        return () => {
+          unsubOrders && unsubOrders();
+          unsubProducts && unsubProducts();
+        };
       } else {
         setIsAuthenticated(false);
+        setLoading(false);
         navigate('/admin/login');
       }
-      setLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => {
+      unsubAuth();
+    };
   }, [navigate]);
 
   const loadOrders = () => {
@@ -157,17 +167,17 @@ const AdminDashboard = () => {
     return unsubscribe;
   };
 
-  const loadProducts = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'products'));
-      const productsData = querySnapshot.docs.map(doc => ({
+  const loadProductsRealtime = () => {
+    const unsubscribe = onSnapshot(collection(db, 'products'), (snapshot) => {
+      const productsData = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       })) as Product[];
       setAdminProducts(productsData);
-    } catch (error) {
-      console.error('Error loading products:', error);
-    }
+    }, (err) => {
+      console.error('Error loading products:', err);
+    });
+    return unsubscribe;
   };
 
   const handleLogout = async () => {
@@ -313,8 +323,8 @@ const AdminDashboard = () => {
       const product = {
         name: name.trim(),
         description: description.trim(),
-        mainPrice: parseFloat(mainPrice),
-        offerPrice: offerPrice ? parseFloat(offerPrice) : null,
+        mainPrice: parseFloat(mainPrice || "0"),
+        offerPrice: offerPrice ? parseFloat(offerPrice || "0") : null,
         mainImage: mainImageUrl,
         additionalImages: additionalImageUrls,
         videoUrl: videoUrlFinal,
@@ -325,7 +335,7 @@ const AdminDashboard = () => {
       await addDoc(collection(db, 'products'), product);
       toast({ title: '✅ Success', description: 'Product added successfully!' });
       setName(''); setDescription(''); setMainPrice(''); setOfferPrice(''); setMainImageFile(null); setMainImagePreview(null); setAdditionalImageFiles([]); setAdditionalImagePreviews([]); setVideoFile(null); setVideoPreview(null); setTags([]);
-      loadProducts();
+      // Realtime listener will update product list automatically
     } catch (error) {
       console.error('Error adding product:', error);
       toast({ title: '❌ Error', description: 'Failed to add product', variant: 'destructive' });
@@ -387,7 +397,7 @@ const AdminDashboard = () => {
       const batchDeletes = snapshot.docs.map(docSnap => deleteDoc(doc(db, 'products', docSnap.id)));
       await Promise.all(batchDeletes);
       toast({ title: 'All products deleted', description: 'All products have been removed from Firestore.' });
-      loadProducts();
+      // Realtime listener will reflect deletions
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to delete all products', variant: 'destructive' });
     }
@@ -401,7 +411,7 @@ const AdminDashboard = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f0f4f8] via-[#fdf6f0] to-[#fff] text-[#222] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-premium-500 mx-auto mb-4"></div>
           <p className="text-gray-400">Loading...</p>
         </div>
       </div>
@@ -409,6 +419,7 @@ const AdminDashboard = () => {
   }
 
   if (!isAuthenticated) {
+    // Render nothing once we've navigated away, but avoid infinite spinner
     return null;
   }
 
@@ -417,23 +428,23 @@ const AdminDashboard = () => {
     .reduce((sum, order) => sum + order.pricing.total, 0);
     
   const totalDiscountSavings = adminProducts.reduce((sum, product) => {
-    if (product.originalPrice && product.price) {
-      return sum + (product.originalPrice - product.price) * product.stock;
+    if (product.originalPrice && (product as any).price) {
+      return sum + (product.originalPrice - (product as any).price) * (product as any).stock;
     }
     return sum;
   }, 0);
 
   const stats = [
-    { title: "Total Products", value: adminProducts.length, icon: Package, color: "from-blue-500 to-cyan-500" },
-    { title: "Total Orders", value: orders.length, icon: ShoppingCart, color: "from-green-500 to-emerald-500" },
-    { title: "Revenue", value: `৳${totalRevenue.toFixed(2)}`, icon: DollarSign, color: "from-purple-500 to-pink-500" },
-    { title: "Discount Savings", value: `৳${totalDiscountSavings.toFixed(2)}`, icon: Percent, color: "from-orange-500 to-red-500" }
+    { title: "Total Products", value: adminProducts.length, icon: Package, color: "from-premium-500 to-emerald-500" },
+    { title: "Total Orders", value: orders.length, icon: ShoppingCart, color: "from-emerald-500 to-green-500" },
+    { title: "Revenue", value: `৳${totalRevenue.toFixed(2)}`, icon: DollarSign, color: "from-green-600 to-emerald-600" },
+    { title: "Discount Savings", value: `৳${totalDiscountSavings.toFixed(2)}`, icon: Percent, color: "from-gold-500 to-yellow-500" }
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f0f4f8] via-[#fdf6f0] to-[#fff] text-[#222]">
       {/* Header */}
-      <header className="bg-white/70 backdrop-blur-lg border-b border-blue-200/30 sticky top-0 z-50">
+      <header className="bg-white/70 backdrop-blur-lg border-b border-premium-200/60 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -442,7 +453,7 @@ const AdminDashboard = () => {
                 alt="AB Gadgets Logo" 
                 className="w-10 h-10 mr-3 rounded-lg shadow-lg transform hover:scale-110 transition-transform duration-300"
               />
-              <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent mr-8">
+              <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-premium-600 to-emerald-600 bg-clip-text text-transparent mr-8">
                 AB GADGETS
               </Link>
               <span className="text-gray-600">Admin Dashboard</span>
@@ -461,14 +472,14 @@ const AdminDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Navigation Tabs */}
-        <div className="flex space-x-1 mb-8 bg-gray-800/30 p-1 rounded-lg backdrop-blur-lg border border-blue-500/20">
+        <div className="flex space-x-1 mb-8 bg-gray-800/30 p-1 rounded-lg backdrop-blur-lg border border-premium-500/20">
           {['overview', 'products', 'orders', 'add-product'].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-2 rounded-md font-medium transition-all capitalize ${
                 activeTab === tab 
-                  ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white' 
+                  ? 'bg-gradient-to-r from-premium-600 to-emerald-600 text-white' 
                   : 'text-gray-400 hover:text-white'
               }`}
             >
@@ -482,15 +493,15 @@ const AdminDashboard = () => {
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {stats.map((stat, index) => (
-                <Card key={index} className="bg-white/80 backdrop-blur-lg border border-blue-200/30">
+                <Card key={index} className="bg-white/80 backdrop-blur-lg border border-premium-200/30">
                   <CardContent className="p-6">
                     <div className="flex items-center justify-between">
                       <div>
                         <p className="text-gray-600 text-sm">{stat.title}</p>
-                        <p className="text-2xl font-bold text-blue-700">{stat.value}</p>
+                        <p className="text-2xl font-bold text-premium-700">{stat.value}</p>
                       </div>
-                      <div className={`bg-gradient-to-r ${stat.color.replace('from-', 'from-blue-200 ').replace('to-', 'to-cyan-200 ')} w-12 h-12 rounded-full flex items-center justify-center`}>
-                        <stat.icon className="w-6 h-6 text-blue-600" />
+                      <div className={`bg-gradient-to-r ${stat.color.replace('from-', 'from-premium-200 ').replace('to-', 'to-emerald-200 ')} w-12 h-12 rounded-full flex items-center justify-center`}>
+                        <stat.icon className="w-6 h-6 text-premium-600" />
                       </div>
                     </div>
                   </CardContent>
@@ -500,7 +511,7 @@ const AdminDashboard = () => {
 
             {/* Quick Stats */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card className="bg-gray-800/30 backdrop-blur-lg border border-blue-500/20">
+              <Card className="bg-gray-800/30 backdrop-blur-lg border border-premium-500/20">
                 <CardHeader>
                   <CardTitle className="text-white">Top Categories</CardTitle>
                 </CardHeader>
@@ -508,13 +519,13 @@ const AdminDashboard = () => {
                   {['Headphones', 'Selfie Sticks', 'Microphones', 'Toys'].map((category) => (
                     <div key={category} className="flex justify-between items-center py-2">
                       <span className="text-gray-300">{category}</span>
-                      <span className="text-blue-400">{adminProducts.filter(p => p.category === category).length}</span>
+                      <span className="text-premium-400">{adminProducts.filter(p => (p as any).category === category).length}</span>
                     </div>
                   ))}
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800/30 backdrop-blur-lg border border-blue-500/20">
+              <Card className="bg-gray-800/30 backdrop-blur-lg border border-premium-500/20">
                 <CardHeader>
                   <CardTitle className="text-white">Recent Orders</CardTitle>
                 </CardHeader>
@@ -539,12 +550,12 @@ const AdminDashboard = () => {
 
         {/* Products Tab */}
         {activeTab === 'products' && (
-          <Card className="bg-gray-800/30 backdrop-blur-lg border border-blue-500/20">
+          <Card className="bg-gray-800/30 backdrop-blur-lg border border-premium-500/20">
             <CardHeader>
               <CardTitle className="text-white">Product Management ({adminProducts.length} products)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex space-x-4 mb-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                 <Button
                   onClick={deleteAllProducts}
                   variant="outline"
@@ -552,14 +563,17 @@ const AdminDashboard = () => {
                 >
                   Delete All Products
                 </Button>
-                <Input
-                  type="text"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="Search products"
-                  className="bg-gray-700/50 border-gray-600 text-white focus:border-blue-500"
-                />
+                <div className="w-full sm:w-80">
+                  <Input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search products"
+                    className="bg-gray-700/50 border-gray-600 text-white focus:border-premium-500"
+                  />
+                </div>
               </div>
+              <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="border-gray-700">
@@ -578,11 +592,11 @@ const AdminDashboard = () => {
                         <img 
                           src={
                             product.mainImageUrl ||
-                            (Array.isArray(product.image) ? product.image[0] : product.image) ||
+                            (Array.isArray((product as any).image) ? (product as any).image[0] : (product as any).image) ||
                             "/placeholder.jpg"
                           } 
                           alt={product.name} 
-                          className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
+                          className="w-full h-48 object-contain rounded-xl shadow bg-premium-50"
                           loading="lazy"
                           onError={(e) => {
                             // Fallback to placeholder if any error occurs
@@ -595,11 +609,14 @@ const AdminDashboard = () => {
                       <TableCell className="text-white">
                         <div>
                           <div>{product.name}</div>
-                          {product.featured && <Badge className="bg-blue-500/20 text-blue-300 text-xs">Featured</Badge>}
+                          {product.featured && <Badge className="bg-premium-500/20 text-premium-300 text-xs">Featured</Badge>}
                         </div>
                       </TableCell>
-                      <TableCell className="text-blue-400 font-semibold">
-                        ৳{product.mainPrice.toLocaleString('en-US')}
+                      <TableCell className="text-premium-400 font-semibold">
+                        {(() => {
+                          const price = getPrice(product as any);
+                          return `৳${new Intl.NumberFormat('en-US').format(price)}`;
+                        })()}
                       </TableCell>
                       <TableCell>
                         {product.inStock ? (
@@ -615,7 +632,7 @@ const AdminDashboard = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex space-x-2">
-                          <Button size="sm" variant="outline" className="border-blue-400 text-blue-400 hover:bg-blue-400/10">
+                          <Button size="sm" variant="outline" className="border-premium-400 text-premium-400 hover:bg-premium-400/10">
                             <Edit className="w-4 h-4" />
                           </Button>
                           <Button 
@@ -632,13 +649,14 @@ const AdminDashboard = () => {
                   ))}
                 </TableBody>
               </Table>
+              </div>
             </CardContent>
           </Card>
         )}
 
         {/* Orders Tab */}
         {activeTab === 'orders' && (
-          <Card className="bg-gray-800/30 backdrop-blur-lg border border-blue-500/20">
+          <Card className="bg-gray-800/30 backdrop-blur-lg border border-premium-500/20">
             <CardHeader>
               <CardTitle className="text-white">Order Management ({orders.length} orders)</CardTitle>
             </CardHeader>
@@ -650,7 +668,7 @@ const AdminDashboard = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {/* Order Info */}
                         <div>
-                          <h4 className="text-lg font-semibold text-blue-400 mb-3">Order Details</h4>
+                          <h4 className="text-lg font-semibold text-premium-400 mb-3">Order Details</h4>
                           <div className="space-y-2 text-sm">
                             <p className="text-white"><strong>Order #:</strong> {order.orderNumber}</p>
                             <p className="text-gray-300"><strong>Date:</strong> {new Date(order.orderDate).toLocaleDateString()}</p>
@@ -687,7 +705,7 @@ const AdminDashboard = () => {
                               <MapPin className="w-4 h-4 mr-2 text-gray-400 mt-0.5" />
                               <div>
                                 <p>{order.customer.address}</p>
-                                <p className="text-blue-400">{order.customer.deliveryArea}</p>
+                                <p className="text-premium-400">{order.customer.deliveryArea}</p>
                               </div>
                             </div>
                           </div>
@@ -697,12 +715,16 @@ const AdminDashboard = () => {
                         <div>
                           <h4 className="text-lg font-semibold text-purple-400 mb-3">Items & Pricing</h4>
                           <div className="space-y-2 text-sm">
-                            {order.items.map((item, index) => (
-                              <div key={index} className="flex justify-between text-gray-300">
-                                <span>{item.name} (x{item.quantity})</span>
-                                <span>৳{(item.price * item.quantity).toFixed(2)}</span>
-                              </div>
-                            ))}
+                            {order.items.map((item, index) => {
+                              const price = getPrice(item);
+                              
+                              return (
+                                <div key={index} className="flex justify-between text-gray-300">
+                                  <span>{item.name} (x{item.quantity})</span>
+                                  <span>৳{new Intl.NumberFormat('en-US').format(price * item.quantity)}</span>
+                                </div>
+                              );
+                            })}
                             <div className="border-t border-gray-600 pt-2 mt-2">
                               <div className="flex justify-between text-gray-300">
                                 <span>Subtotal:</span>

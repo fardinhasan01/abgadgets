@@ -6,11 +6,11 @@ import { Badge } from '@/components/ui/badge';
 import { getProductImageUrl } from '@/lib/utils';
 
 interface Product {
-  id: string;
+  id: string | number;
   name: string;
   price?: number;
   originalPrice?: number;
-  mainPrice: number;
+  mainPrice?: number;
   offerPrice?: number;
   discount?: number;
   category: string;
@@ -35,11 +35,14 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, handleDirectOrder, onProductClick }) => {
   // Handle both data structures: local products (price/originalPrice) and Firebase (mainPrice/offerPrice)
-  const offerPrice = product.offerPrice || product.price;
-  const mainPrice = product.mainPrice || product.originalPrice || product.price;
-
-  const hasDiscount = offerPrice && mainPrice && offerPrice < mainPrice;
-  const discountPercentage = hasDiscount ? Math.round(((mainPrice - offerPrice) / mainPrice) * 100) : 0;
+  const mainPrice = product.price || product.mainPrice || 0;
+  const originalPrice = product.originalPrice || mainPrice;
+  const offerPrice = product.offerPrice || (product.originalPrice && product.price && product.price < product.originalPrice ? product.price : null);
+  
+  // Safe price logic with proper validation
+  const hasDiscount = typeof offerPrice === 'number' && offerPrice > 0 && offerPrice < originalPrice;
+  const priceToShow = hasDiscount ? offerPrice : mainPrice;
+  const discountPercentage = hasDiscount ? Math.round(((originalPrice - offerPrice) / originalPrice) * 100) : 0;
 
   // Helper for bengali numbers
   const toBengaliNumber = (num: number) => {
@@ -57,13 +60,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
 
   return (
     <Card 
-      className="group relative overflow-hidden bg-white border-l-4 border-orange-500 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none cursor-pointer"
+      className="group relative overflow-hidden bg-white border-l-4 border-premium-500 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 focus:outline-none cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Premium Badge */}
       {product.featured && (
         <div className="absolute top-4 left-4 z-10">
-          <div className="flex items-center gap-1 bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+          <div className="flex items-center gap-1 bg-gradient-to-r from-gold-500 to-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
             <Sparkles className="w-3 h-3" />
             Premium
           </div>
@@ -79,7 +82,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
       </div>
       
       {/* Image Container */}
-      <div className="relative overflow-hidden aspect-square bg-orange-50 rounded-t-2xl">
+      <div className="relative overflow-hidden aspect-square bg-premium-50 rounded-t-2xl border-b border-premium-100">
         <img
           src={
             product.mainImageUrl ||
@@ -87,7 +90,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
             "/placeholder.jpg"
           }
           alt={product.name}
-          className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
+          className="w-full h-48 object-contain rounded-xl"
           loading="lazy"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
@@ -98,21 +101,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
         />
         
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         
         {/* Discount Badge */}
         {hasDiscount && (
           <div className="absolute top-4 right-4">
-            <div className="bg-gradient-to-r from-orange-500 to-red-600 text-white font-bold text-sm px-3 py-1 rounded-full shadow-lg">
+            <div className="bg-gradient-to-r from-premium-500 to-emerald-600 text-white font-bold text-sm px-3 py-1 rounded-full shadow-lg">
               {toBengaliNumber(discountPercentage)}% ছাড়
             </div>
           </div>
         )}
         
         {/* Rating Badge */}
-        <div className="absolute bottom-3 right-3 bg-white rounded-full px-3 py-1 flex items-center gap-1 shadow-lg">
-          <Star className="w-4 h-4 text-yellow-500 fill-current" />
-          <span className="text-orange-800 font-semibold text-sm">{product.rating}</span>
+        <div className="absolute bottom-3 right-3 bg-white rounded-full px-3 py-1 flex items-center gap-1 shadow-lg border border-premium-200">
+          <Star className="w-4 h-4 text-gold-500 fill-current" />
+          <span className="text-premium-800 font-semibold text-sm">{product.rating}</span>
         </div>
         
         {/* Stock Status */}
@@ -128,7 +131,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
       {/* Content */}
       <CardContent className="p-6 space-y-4">
         {/* Product Name */}
-        <h3 className="text-lg font-bold text-orange-900 line-clamp-2 h-14 leading-tight group-hover:text-orange-700 transition-colors duration-300">
+        <h3 className="text-lg font-bold text-premium-900 line-clamp-2 h-14 leading-tight group-hover:text-premium-700 transition-colors duration-300">
           {product.name}
         </h3>
         
@@ -136,15 +139,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
         <div className="flex items-baseline gap-3">
           {hasDiscount ? (
             <>
-              <span className="text-2xl font-extrabold text-orange-600">
-                ৳{toBengaliNumber(offerPrice)}
+              <span className="text-2xl font-extrabold text-premium-600">
+                ৳{toBengaliNumber(priceToShow)}
               </span>
               <span className="text-lg text-gray-400 line-through">
-                ৳{toBengaliNumber(mainPrice)}
+                ৳{toBengaliNumber(originalPrice)}
               </span>
             </>
           ) : (
-            <span className="text-2xl font-extrabold text-orange-600">
+            <span className="text-2xl font-extrabold text-premium-600">
               ৳{toBengaliNumber(mainPrice)}
             </span>
           )}
@@ -152,7 +155,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
         
         {/* Category Tag */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded-full">
+          <span className="text-xs font-medium text-premium-600 bg-premium-100 px-2 py-1 rounded-full border border-premium-200">
             {product.category}
           </span>
         </div>
@@ -165,7 +168,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
               handleDirectOrder(product);
             }}
             disabled={!product.inStock}
-            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-orange-200/50 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
+            className="w-full bg-gradient-to-r from-premium-500 to-emerald-600 hover:from-premium-600 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-premium-200/50 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
           >
             <Zap className="w-4 h-4 mr-2" />
             অর্ডার করুন
@@ -178,7 +181,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
             }}
             disabled={!product.inStock}
             variant="outline"
-            className="w-full border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
+            className="w-full border-premium-300 text-premium-700 hover:bg-premium-50 hover:border-premium-400 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none"
           >
             <ShoppingCart className="w-4 h-4 mr-2" />
             কার্টে যোগ করুন
@@ -187,7 +190,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
       </CardContent>
       
       {/* Hover Glow Effect */}
-      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-400/0 via-orange-400/5 to-yellow-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-premium-400/0 via-premium-400/5 to-emerald-400/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
     </Card>
   );
 };

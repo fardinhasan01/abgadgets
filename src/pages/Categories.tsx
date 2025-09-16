@@ -86,8 +86,8 @@ const CategoriesPage: React.FC = () => {
     addToCart({
       id: product.id,
       name: product.name,
-      mainPrice: Number(product.mainPrice || product.price),
-      offerPrice: Number(product.offerPrice || product.price),
+      price: product.price,
+      offerPrice: product.offerPrice,
       quantity: 1,
       mainImageUrl: product.mainImageUrl,
     });
@@ -98,11 +98,10 @@ const CategoriesPage: React.FC = () => {
     navigate('/checkout', { state: { buyNowItem: {
       id: product.id,
       name: product.name,
-      mainPrice: Number(product.mainPrice || product.price),
+      price: product.price,
+      offerPrice: product.offerPrice,
       quantity: 1,
       mainImageUrl: product.mainImageUrl,
-      price: Number(product.offerPrice || product.price),
-      originalPrice: product.originalPrice,
     }}});
   };
 

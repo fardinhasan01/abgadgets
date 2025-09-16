@@ -78,7 +78,7 @@ const Index = () => {
         const firebaseProducts = querySnapshot.docs.map(doc => {
           const data = doc.data();
           const mainPrice = Number(data.mainPrice);
-          const product = { id: doc.id, ...data, mainPrice, mainImage: data.mainImageUrl };
+          const product = { id: doc.id, ...data, mainPrice, price: mainPrice, offerPrice: data.offerPrice ?? null, mainImage: data.mainImageUrl };
           console.log('Fetched product:', product);
           return product;
         });
@@ -117,7 +117,8 @@ const Index = () => {
       id: product.id,
       name: product.name,
       mainImage: product.mainImage || product.image,
-      mainPrice: Number(product.mainPrice || product.price),
+      price: product.price ?? product.mainPrice,
+      offerPrice: product.offerPrice,
       quantity: 1,
     });
     toast({ title: '✅ Product added to cart successfully!' });
@@ -127,11 +128,10 @@ const Index = () => {
     navigate('/checkout', { state: { buyNowItem: {
       id: product.id,
       name: product.name,
-      mainPrice: Number(product.mainPrice || product.price),
+      price: product.price,
+      offerPrice: product.offerPrice,
       quantity: 1,
       imageUrl: product.mainImageUrl || product.imageUrl || product.mainImage || product.image,
-      price: Number(product.offerPrice || product.price),
-      originalPrice: product.originalPrice || product.mainPrice,
     }}});
   };
 
@@ -177,16 +177,16 @@ const Index = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Animated Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-orange-50 via-yellow-50 to-orange-100 animate-pulse-slow"></div>
-      <div className="fixed inset-0 bg-gradient-to-tr from-transparent via-orange-200/20 to-transparent animate-pulse-slow" style={{ animationDelay: '4s' }}></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-premium-50 via-emerald-50 to-white animate-pulse-slow"></div>
+      <div className="fixed inset-0 bg-gradient-to-tr from-transparent via-premium-200/20 to-transparent animate-pulse-slow" style={{ animationDelay: '4s' }}></div>
       
       {/* Floating Elements */}
-      <div className="fixed top-20 left-10 w-32 h-32 bg-orange-300/20 rounded-full blur-xl animate-float"></div>
-      <div className="fixed bottom-20 right-10 w-40 h-40 bg-yellow-400/15 rounded-full blur-xl animate-float" style={{ animationDelay: '2s' }}></div>
-      <div className="fixed top-1/2 left-1/4 w-24 h-24 bg-orange-500/10 rounded-full blur-lg animate-float" style={{ animationDelay: '4s' }}></div>
+      <div className="fixed top-20 left-10 w-32 h-32 bg-emerald-300/20 rounded-full blur-xl animate-float"></div>
+      <div className="fixed bottom-20 right-10 w-40 h-40 bg-premium-400/15 rounded-full blur-xl animate-float" style={{ animationDelay: '2s' }}></div>
+      <div className="fixed top-1/2 left-1/4 w-24 h-24 bg-premium-500/10 rounded-full blur-lg animate-float" style={{ animationDelay: '4s' }}></div>
 
       {/* Hero Section with Rotating Image Banners */}
-      <section className="relative min-h-[160px] flex items-center justify-center overflow-hidden mb-0 pb-0 bg-gradient-to-r from-orange-900 to-yellow-800">
+      <section className="relative min-h-[160px] flex items-center justify-center overflow-hidden mb-0 pb-0 bg-gradient-to-r from-premium-900 to-emerald-900">
         <div className="absolute inset-0 w-full h-40 sm:h-56 md:h-72 rounded-2xl overflow-hidden shadow-2xl mx-auto mt-2 mb-0 pb-0">
           <img
             src={banners[currentBanner].image}
@@ -194,7 +194,7 @@ const Index = () => {
             className="w-full h-full object-cover object-center rounded-2xl"
             style={{ opacity: 1 }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-orange-900/60 via-transparent to-transparent rounded-2xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-premium-900/60 via-transparent to-transparent rounded-2xl"></div>
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center w-full">
         </div>
@@ -202,7 +202,7 @@ const Index = () => {
 
       {/* Shop Now button directly under banner, centered, with mt-4 */}
       <div className="w-full flex justify-center mt-6 mb-0">
-        <Button onClick={() => navigate('/shop')} className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-8 py-4 text-lg rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 animate-glow">
+        <Button onClick={() => navigate('/shop')} className="bg-gradient-to-r from-premium-600 to-emerald-600 hover:from-premium-700 hover:to-emerald-700 text-white px-8 py-4 text-lg rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 animate-glow">
           <Sparkles className="w-5 h-5 mr-2" />
           Shop Now
           <ArrowRight className="w-5 h-5 ml-2" />
@@ -210,29 +210,29 @@ const Index = () => {
       </div>
 
       {/* Horizontally scrolling categories banner */}
-      <div className="overflow-x-auto whitespace-nowrap scroll-smooth py-3 px-2 animate-scroll-slow bg-gradient-to-r from-emerald-900 via-green-800 to-emerald-900 h-20 flex items-center">
+      <div className="overflow-x-auto whitespace-nowrap scroll-smooth py-3 px-2 animate-scroll-slow bg-gradient-to-r from-premium-900 via-emerald-900 to-premium-900 h-20 flex items-center">
         {categories.map(cat => (
-          <span key={cat} className="inline-block bg-gradient-to-r from-emerald-600/90 to-teal-600/90 backdrop-blur-sm text-white px-4 py-2 rounded-xl mr-4 shadow-lg hover:from-emerald-500 hover:to-teal-500 transition-all duration-300 border border-emerald-400/30">
+          <span key={cat} className="inline-block bg-gradient-to-r from-premium-600/90 to-emerald-600/90 backdrop-blur-sm text-white px-4 py-2 rounded-xl mr-4 shadow-lg hover:from-premium-500 hover:to-emerald-500 transition-all duration-300 border border-premium-400/30">
             {cat}
           </span>
         ))}
       </div>
 
       {/* Categories Section */}
-      <section className="px-4 py-12 bg-gradient-to-br from-emerald-900 via-green-800 to-emerald-900 text-white">
+      <section className="px-4 py-12 bg-gradient-to-br from-premium-900 via-emerald-900 to-premium-900 text-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-4xl font-bold mb-4 flex items-center justify-center">
-              <Sparkles className="w-8 h-8 mr-3 text-emerald-400" />
+              <Sparkles className="w-8 h-8 mr-3 text-premium-300" />
               Browse Categories
             </h2>
-            <p className="text-emerald-200 text-lg">Discover our premium collection</p>
+            <p className="text-premium-200 text-lg">Discover our premium collection</p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-8">
             {categories.map(category => (
               <button
                 key={category}
-                className={`bg-gradient-to-r from-emerald-600/80 to-teal-600/80 backdrop-blur-sm rounded-2xl py-6 font-semibold hover:from-emerald-500 hover:to-teal-500 transition-all duration-300 cursor-pointer w-full transform hover:scale-105 border border-emerald-400/30 shadow-lg ${activeCategory === category ? 'ring-2 ring-emerald-400 from-emerald-500 to-teal-500' : ''}`}
+                className={`bg-gradient-to-r from-premium-600/80 to-emerald-600/80 backdrop-blur-sm rounded-2xl py-6 font-semibold hover:from-premium-500 hover:to-emerald-500 transition-all duration-300 cursor-pointer w-full transform hover:scale-105 border border-premium-400/30 shadow-lg ${activeCategory === category ? 'ring-2 ring-premium-400 from-premium-500 to-emerald-500' : ''}`}
                 onClick={() => setActiveCategory(category)}
               >
                 {category}
@@ -243,7 +243,7 @@ const Index = () => {
             {filteredProducts.map(product => (
               <div
                 key={product.id}
-                className="bg-gradient-to-r from-emerald-600/60 to-teal-600/60 backdrop-blur-sm rounded-2xl p-4 shadow-lg cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-emerald-500/20 border border-emerald-400/30"
+                className="bg-gradient-to-r from-premium-600/60 to-emerald-600/60 backdrop-blur-sm rounded-2xl p-4 shadow-lg cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-premium-500/20 border border-premium-400/30"
               >
                 <img
                   src={
@@ -252,7 +252,7 @@ const Index = () => {
                     "/placeholder.jpg"
                   }
                   alt={product.name}
-                  className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
+                  className="w-full h-48 object-contain rounded-xl shadow bg-premium-50"
                   loading="lazy"
                   onError={(e) => {
                     // Fallback to placeholder if any error occurs
@@ -263,24 +263,30 @@ const Index = () => {
                 />
                 <h3 className="text-white font-semibold line-clamp-2 text-sm">{product.name}</h3>
                 <div className="price-section mt-2 flex items-center gap-2">
-                  {(product.offerPrice && product.mainPrice && product.offerPrice < product.mainPrice) || 
-                   (product.price && product.originalPrice && product.price < product.originalPrice) ? (
-                    <>
+                  {(() => {
+                    const mainPrice = product.price || product.mainPrice;
+                    const offerPrice = product.offerPrice || (product.originalPrice && product.price < product.originalPrice ? product.price : null);
+                    const originalPrice = product.originalPrice || product.price;
+                    const hasDiscount = typeof offerPrice === 'number' && offerPrice > 0 && offerPrice < originalPrice;
+                    
+                    return hasDiscount ? (
+                      <>
+                        <span className="offer-price text-lg font-bold text-emerald-300">
+                          ৳{offerPrice}
+                        </span>
+                        <span className="main-price text-premium-200 line-through text-base">
+                          ৳{originalPrice}
+                        </span>
+                        <span className="discount text-premium-200 text-sm font-semibold">
+                          ({Math.round(((originalPrice - offerPrice) / originalPrice) * 100)}% off)
+                        </span>
+                      </>
+                    ) : (
                       <span className="offer-price text-lg font-bold text-emerald-300">
-                        ৳{product.offerPrice || product.price}
+                        ৳{mainPrice}
                       </span>
-                      <span className="main-price text-emerald-200 line-through text-base">
-                        ৳{product.mainPrice || product.originalPrice}
-                      </span>
-                      <span className="discount text-yellow-300 text-sm font-semibold">
-                        ({Math.round((((product.mainPrice || product.originalPrice) - (product.offerPrice || product.price)) / (product.mainPrice || product.originalPrice)) * 100)}% off)
-                      </span>
-                    </>
-                  ) : (
-                    <span className="offer-price text-lg font-bold text-emerald-300">
-                      ৳{product.price || product.mainPrice}
-                    </span>
-                  )}
+                    );
+                  })()}
                 </div>
               </div>
             ))}
@@ -293,14 +299,14 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-fade-in">
             <div className="inline-flex items-center gap-2 mb-4">
-              <Sparkles className="w-6 h-6 text-orange-500 animate-pulse" />
-              <span className="text-orange-600 font-medium text-sm uppercase tracking-wider">Trending Now</span>
-              <Sparkles className="w-6 h-6 text-orange-500 animate-pulse" />
+              <Sparkles className="w-6 h-6 text-premium-500 animate-pulse" />
+              <span className="text-premium-600 font-medium text-sm uppercase tracking-wider">Trending Now</span>
+              <Sparkles className="w-6 h-6 text-premium-500 animate-pulse" />
             </div>
-            <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 via-red-500 to-orange-700 bg-clip-text text-transparent mb-6 leading-tight">
+            <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-premium-600 via-emerald-600 to-premium-700 bg-clip-text text-transparent mb-6 leading-tight">
               What's Hot Right Now
             </h2>
-            <p className="text-orange-700/80 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+            <p className="text-premium-700/80 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
               Discover the most popular products everyone is talking about
             </p>
           </div>
@@ -328,14 +334,14 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-fade-in">
             <div className="inline-flex items-center gap-2 mb-4">
-              <Sparkles className="w-6 h-6 text-orange-500 animate-pulse" />
-              <span className="text-orange-600 font-medium text-sm uppercase tracking-wider">New Arrivals</span>
-              <Sparkles className="w-6 h-6 text-orange-500 animate-pulse" />
+              <Sparkles className="w-6 h-6 text-premium-500 animate-pulse" />
+              <span className="text-premium-600 font-medium text-sm uppercase tracking-wider">New Arrivals</span>
+              <Sparkles className="w-6 h-6 text-premium-500 animate-pulse" />
             </div>
-            <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 via-red-500 to-orange-700 bg-clip-text text-transparent mb-6 leading-tight">
+            <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-premium-600 via-emerald-600 to-premium-700 bg-clip-text text-transparent mb-6 leading-tight">
               Latest Products
             </h2>
-            <p className="text-orange-700/80 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+            <p className="text-premium-700/80 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
               Fresh arrivals just for you
             </p>
           </div>
@@ -363,14 +369,14 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-fade-in">
             <div className="inline-flex items-center gap-2 mb-4">
-              <Sparkles className="w-6 h-6 text-orange-500 animate-pulse" />
-              <span className="text-orange-600 font-medium text-sm uppercase tracking-wider">Featured Collection</span>
-              <Sparkles className="w-6 h-6 text-orange-500 animate-pulse" />
+              <Sparkles className="w-6 h-6 text-premium-500 animate-pulse" />
+              <span className="text-premium-600 font-medium text-sm uppercase tracking-wider">Featured Collection</span>
+              <Sparkles className="w-6 h-6 text-premium-500 animate-pulse" />
             </div>
-            <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 via-red-500 to-orange-700 bg-clip-text text-transparent mb-6 leading-tight">
+            <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-premium-600 via-emerald-600 to-premium-700 bg-clip-text text-transparent mb-6 leading-tight">
               🔥 Featured Products
             </h2>
-            <p className="text-orange-700/80 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+            <p className="text-premium-700/80 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
               Our best and most popular products carefully curated for you
             </p>
           </div>
@@ -399,14 +405,14 @@ const Index = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12 animate-fade-in">
               <div className="inline-flex items-center gap-2 mb-4">
-                <Percent className="w-6 h-6 text-red-500 animate-pulse" />
-                <span className="text-red-600 font-medium text-sm uppercase tracking-wider">Limited Time</span>
-                <Percent className="w-6 h-6 text-red-500 animate-pulse" />
+                <Percent className="w-6 h-6 text-premium-500 animate-pulse" />
+                <span className="text-premium-600 font-medium text-sm uppercase tracking-wider">Limited Time</span>
+                <Percent className="w-6 h-6 text-premium-500 animate-pulse" />
               </div>
-              <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-6 leading-tight">
+              <h2 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-premium-600 to-emerald-600 bg-clip-text text-transparent mb-6 leading-tight">
                 HOT DEALS 🔥
               </h2>
-              <p className="text-orange-700/80 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+              <p className="text-premium-700/80 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
                 সীমিত সময়ের জন্য বিশেষ ছাড়
               </p>
             </div>
@@ -434,46 +440,46 @@ const Index = () => {
       <section className="py-20 bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-fade-in">
-            <h2 className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-4">
+            <h2 className="text-4xl font-bold bg-gradient-to-r from-premium-600 to-emerald-600 bg-clip-text text-transparent mb-4">
               Why Choose AB Gadgets?
             </h2>
-            <p className="text-orange-700/80 text-lg">Premium service, quality products, and exceptional value</p>
+            <p className="text-premium-700/80 text-lg">Premium service, quality products, and exceptional value</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <Card className="bg-white/90 backdrop-blur-xl border border-orange-200/50 hover:shadow-2xl transition-all duration-500 transform hover:scale-105 animate-slide-up">
+            <Card className="bg-white/90 backdrop-blur-xl border border-premium-200/50 hover:shadow-2xl transition-all duration-500 transform hover:scale-105 animate-slide-up">
               <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Truck className="w-8 h-8 text-orange-600" />
+                <div className="w-16 h-16 bg-premium-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Truck className="w-8 h-8 text-premium-600" />
                 </div>
-                <h3 className="text-xl font-bold text-orange-900 mb-3">ফ্রি ডেলিভারি</h3>
-                <p className="text-orange-700">সারা বাংলাদেশে</p>
+                <h3 className="text-xl font-bold text-premium-900 mb-3">ফ্রি ডেলিভারি</h3>
+                <p className="text-premium-700">সারা বাংলাদেশে</p>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-xl border border-orange-200/50 hover:shadow-2xl transition-all duration-500 transform hover:scale-105 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+            <Card className="bg-white/90 backdrop-blur-xl border border-premium-200/50 hover:shadow-2xl transition-all duration-500 transform hover:scale-105 animate-slide-up" style={{ animationDelay: '0.1s' }}>
               <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Shield className="w-8 h-8 text-orange-600" />
+                <div className="w-16 h-16 bg-premium-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Shield className="w-8 h-8 text-premium-600" />
                 </div>
-                <h3 className="text-xl font-bold text-orange-900 mb-3">১০০% অরিজিনাল</h3>
-                <p className="text-orange-700">গুণগত মান নিশ্চিত</p>
+                <h3 className="text-xl font-bold text-premium-900 mb-3">১০০% অরিজিনাল</h3>
+                <p className="text-premium-700">গুণগত মান নিশ্চিত</p>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-xl border border-orange-200/50 hover:shadow-2xl transition-all duration-500 transform hover:scale-105 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <Card className="bg-white/90 backdrop-blur-xl border border-premium-200/50 hover:shadow-2xl transition-all duration-500 transform hover:scale-105 animate-slide-up" style={{ animationDelay: '0.2s' }}>
               <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Gift className="w-8 h-8 text-orange-600" />
+                <div className="w-16 h-16 bg-premium-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Gift className="w-8 h-8 text-premium-600" />
                 </div>
-                <h3 className="text-xl font-bold text-orange-900 mb-3">বিশেষ ছাড়</h3>
-                <p className="text-orange-700">নিয়মিত অফার</p>
+                <h3 className="text-xl font-bold text-premium-900 mb-3">বিশেষ ছাড়</h3>
+                <p className="text-premium-700">নিয়মিত অফার</p>
               </CardContent>
             </Card>
-            <Card className="bg-white/90 backdrop-blur-xl border border-orange-200/50 hover:shadow-2xl transition-all duration-500 transform hover:scale-105 animate-slide-up" style={{ animationDelay: '0.3s' }}>
+            <Card className="bg-white/90 backdrop-blur-xl border border-premium-200/50 hover:shadow-2xl transition-all duration-500 transform hover:scale-105 animate-slide-up" style={{ animationDelay: '0.3s' }}>
               <CardContent className="p-8 text-center">
-                <div className="w-16 h-16 bg-orange-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <Award className="w-8 h-8 text-orange-600" />
+                <div className="w-16 h-16 bg-premium-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                  <Award className="w-8 h-8 text-premium-600" />
                 </div>
-                <h3 className="text-xl font-bold text-orange-900 mb-3">বিশ্বস্ত সেবা</h3>
-                <p className="text-orange-700">গ্রাহক সন্তুষ্টি</p>
+                <h3 className="text-xl font-bold text-premium-900 mb-3">বিশ্বস্ত সেবা</h3>
+                <p className="text-premium-700">গ্রাহক সন্তুষ্টি</p>
               </CardContent>
             </Card>
           </div>
@@ -481,17 +487,17 @@ const Index = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-gradient-to-r from-orange-500/10 to-red-500/10">
+      <section className="py-20 bg-gradient-to-r from-premium-500/10 to-emerald-500/10">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-12 shadow-2xl border border-orange-200/50">
-            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent mb-6">
+          <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-12 shadow-2xl border border-premium-200/50">
+            <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-premium-600 to-emerald-600 bg-clip-text text-transparent mb-6">
               Ready to Get Started?
             </h2>
-            <p className="text-xl text-orange-700 mb-8 leading-relaxed">
+            <p className="text-xl text-premium-700 mb-8 leading-relaxed">
               আজই অর্ডার করুন এবং পেয়ে যান দ্রুত ডেলিভারি
             </p>
             <Link to="/shop">
-              <Button className="bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white px-10 py-4 text-lg rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 animate-glow">
+              <Button className="bg-gradient-to-r from-premium-600 to-emerald-600 hover:from-premium-700 hover:to-emerald-700 text-white px-10 py-4 text-lg rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 animate-glow">
                 <Package className="w-5 h-5 mr-2" />
                 Start Shopping Now
               </Button>
@@ -501,45 +507,45 @@ const Index = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-white/90 backdrop-blur-xl border-t border-orange-200/50 mt-20">
+      <footer className="bg-white/90 backdrop-blur-xl border-t border-premium-200/50 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="md:col-span-1">
               <Link to="/" className="flex items-center space-x-3 mb-4">
                 <img src="/lovable-uploads/d3afd300-289e-412e-ab42-87bdeed21cda.png" alt="AB Gadgets Logo" className="w-12 h-12 rounded-xl" />
                 <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent">AB GADGETS</h1>
-                  <p className="text-xs text-orange-600 -mt-1">Premium Gadgets</p>
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-premium-600 to-emerald-600 bg-clip-text text-transparent">AB GADGETS</h1>
+                  <p className="text-xs text-premium-600 -mt-1">Premium Gadgets</p>
                 </div>
               </Link>
-              <p className="text-orange-700/80">Your one-stop shop for the latest and greatest gadgets.</p>
+              <p className="text-premium-700/80">Your one-stop shop for the latest and greatest gadgets.</p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-orange-800 mb-4">Quick Links</h3>
+              <h3 className="text-lg font-semibold text-premium-800 mb-4">Quick Links</h3>
               <ul className="space-y-2">
-                <li><Link to="/shop" className="text-orange-600 hover:text-orange-800">Shop</Link></li>
-                <li><Link to="/categories" className="text-orange-600 hover:text-orange-800">Categories</Link></li>
-                <li><Link to="/cart" className="text-orange-600 hover:text-orange-800">Cart</Link></li>
+                <li><Link to="/shop" className="text-premium-600 hover:text-premium-800">Shop</Link></li>
+                <li><Link to="/categories" className="text-premium-600 hover:text-premium-800">Categories</Link></li>
+                <li><Link to="/cart" className="text-premium-600 hover:text-premium-800">Cart</Link></li>
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-orange-800 mb-4">Contact Us</h3>
-              <ul className="space-y-2 text-orange-600">
+              <h3 className="text-lg font-semibold text-premium-800 mb-4">Contact Us</h3>
+              <ul className="space-y-2 text-premium-600">
                 <li className="flex items-center"><Mail className="w-4 h-4 mr-2" />saifuldipu8@gmail.com</li>
                 <li className="flex items-center"><Phone className="w-4 h-4 mr-2" />01706003435</li>
                 <li className="flex items-center"><MapPin className="w-4 h-4 mr-2" />Dhanmondi, Dhaka, Bangladesh</li>
               </ul>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-orange-800 mb-4">Newsletter</h3>
-              <p className="text-orange-600 mb-3">Subscribe for exclusive offers.</p>
+              <h3 className="text-lg font-semibold text-premium-800 mb-4">Newsletter</h3>
+              <p className="text-premium-600 mb-3">Subscribe for exclusive offers.</p>
               <div className="flex">
                 <Input type="email" placeholder="Your email" className="rounded-r-none" />
-                <Button className="rounded-l-none bg-orange-600 hover:bg-orange-700">Subscribe</Button>
+                <Button className="rounded-l-none bg-premium-600 hover:bg-premium-700">Subscribe</Button>
               </div>
             </div>
           </div>
-          <div className="mt-12 border-t border-orange-200/50 pt-8 text-center text-orange-600">
+          <div className="mt-12 border-t border-premium-200/50 pt-8 text-center text-premium-600">
             <p>2025 AB Gadgets. All rights reserved.</p>
           </div>
         </div>

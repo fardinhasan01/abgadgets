@@ -40,3 +40,29 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Mobile-specific styles for checkout */
+@media (max-width: 768px) {
+  .sticky-mobile-button {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: white;
+    border-top: 2px solid #16a34a;
+    padding: 1rem;
+    box-shadow: 0 -4px 12px -2px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Ensure content doesn't get hidden behind sticky button */
+  .checkout-container {
+    padding-bottom: 6rem;
+  }
+  
+  /* Make sure the checkout form is scrollable */
+  .checkout-form {
+    overflow-y: auto;
+    min-height: calc(100vh - 200px);
+  }
+}

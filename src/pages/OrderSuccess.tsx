@@ -1,9 +1,9 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CheckCircle, Package, Truck, Mail } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
+import { getPrice } from '@/lib/utils';
 
 const OrderSuccess = () => {
   const location = useLocation();
@@ -70,7 +70,7 @@ const OrderSuccess = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Total Amount:</span>
-                    <span className="text-blue-400 font-bold">${orderData.pricing.total.toFixed(2)} + {orderData.pricing.deliveryCharge} BDT</span>
+                    <span className="text-blue-400 font-bold">৳{new Intl.NumberFormat('en-US').format(orderData.pricing.total)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Payment Method:</span>
@@ -97,7 +97,7 @@ const OrderSuccess = () => {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-400">Delivery Charge:</span>
-                    <span className="text-blue-400">{orderData.pricing.deliveryCharge} BDT</span>
+                    <span className="text-blue-400">৳{orderData.pricing.deliveryCharge}</span>
                   </div>
                 </div>
               </div>
@@ -140,18 +140,22 @@ const OrderSuccess = () => {
           <CardContent className="p-8">
             <h2 className="text-xl font-semibold text-white mb-6">Your Items</h2>
             <div className="space-y-4">
-              {orderData.items.map((item: any, index: number) => (
-                <div key={index} className="flex items-center space-x-4 p-4 bg-gray-700/30 rounded-lg">
-                  <div className="w-16 h-16 bg-gray-600 rounded-lg flex items-center justify-center">
-                    <Package className="w-8 h-8 text-gray-400" />
+              {orderData.items.map((item: any, index: number) => {
+                const price = getPrice(item);
+                
+                return (
+                  <div key={index} className="flex items-center space-x-4 p-4 bg-gray-700/30 rounded-lg">
+                    <div className="w-16 h-16 bg-gray-600 rounded-lg flex items-center justify-center">
+                      <Package className="w-8 h-8 text-gray-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-white font-semibold">{item.name}</h3>
+                      <p className="text-gray-400">Qty: {item.quantity}</p>
+                    </div>
+                    <span className="text-blue-400 font-bold">৳{new Intl.NumberFormat('en-US').format(price * item.quantity)}</span>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-white font-semibold">{item.name}</h3>
-                    <p className="text-gray-400">Qty: {item.quantity}</p>
-                  </div>
-                  <span className="text-blue-400 font-bold">${(item.price * item.quantity).toFixed(2)}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>

@@ -39,27 +39,33 @@ export const CartProvider = ({ children }) => {
   }, [cart]);
 
   const addToCart = (product) => {
+    const normalizedPrice = Number(product.price ?? product.mainPrice) || 0;
+    const normalizedOffer = product.offerPrice != null ? Number(product.offerPrice) : null;
+    const effectivePrice = normalizedOffer && normalizedOffer > 0 && normalizedOffer < normalizedPrice 
+      ? normalizedOffer 
+      : normalizedPrice;
+
+    const normalized = {
+      id: String(product.id),
+      name: product.name,
+      price: normalizedPrice,
+      offerPrice: normalizedOffer,
+      quantity: 1,
+      mainImageUrl: product.mainImageUrl || product.mainImage || product.imageUrl || product.image || '/placeholder.jpg',
+    };
+
     setCart((prev) => {
-      const existingItem = prev.find(item => item.id === product.id);
+      const existingItem = prev.find(item => item.id === normalized.id);
       if (existingItem) {
         // Update quantity if item already exists
         return prev.map(item => 
-          item.id === product.id 
+          item.id === normalized.id 
             ? { ...item, quantity: item.quantity + 1 }
             : item
         );
       } else {
-        // Add new item with full info
-        const item = {
-          id: product.id,
-          name: product.name,
-          mainPrice: Number(product.mainPrice || product.price),
-          offerPrice: Number(product.offerPrice || product.price),
-          quantity: 1,
-          mainImageUrl: product.mainImageUrl,
-          imageUrl: product.mainImage || product.imageUrl || product.image,
-        };
-        return [...prev, item];
+        // Add new item with normalized info
+        return [...prev, normalized];
       }
     });
   };

@@ -109,3 +109,36 @@ export function getProductImage(product: any): string {
     product.image;
   return imageUrl || '/placeholder.jpg';
 }
+
+/**
+ * Safe price calculation helper that handles both string and number values
+ * @param item - Product item with price and offerPrice
+ * @returns The correct price to use (offerPrice if valid, otherwise price)
+ */
+export const getPrice = (item: { price?: any; mainPrice?: any; offerPrice?: any }) => {
+  const base = item.price ?? item.mainPrice;
+  const price = Number(base);
+  const offer = Number(item.offerPrice);
+
+  // If offerPrice is valid and less than main price, use it
+  if (!isNaN(offer) && offer > 0 && offer < price) return offer;
+  
+  // If main price is valid, use it
+  if (!isNaN(price) && price > 0) return price;
+  
+  // Fallback to 0 if both are invalid
+  return 0;
+};
+
+/**
+ * Check if an item has a valid discount
+ * @param item - Product item with price and offerPrice
+ * @returns boolean indicating if discount should be shown
+ */
+export const hasValidDiscount = (item: { price?: any; mainPrice?: any; offerPrice?: any }) => {
+  const base = item.price ?? item.mainPrice;
+  const price = Number(base);
+  const offer = Number(item.offerPrice);
+  
+  return !isNaN(offer) && offer > 0 && offer < price;
+};

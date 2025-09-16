@@ -11,7 +11,7 @@ const Header = () => {
   const cartItemCount = cart?.length || 0;
 
   return (
-    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-md border-b border-orange-200/50">
+    <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-md border-b border-premium-200/60">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -22,16 +22,16 @@ const Header = () => {
                 alt="AB Gadgets Logo" 
                 className="w-12 h-12 rounded-xl shadow-lg transform group-hover:scale-110 transition-all duration-300 group-hover:rotate-3"
                 style={{
-                  filter: 'drop-shadow(0 0 20px rgba(249, 115, 22, 0.3))'
+                  filter: 'drop-shadow(0 0 20px rgba(34,197,94,0.25))'
                 }}
               />
-              <div className="absolute inset-0 bg-orange-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-premium-400/15 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-red-600 bg-clip-text text-transparent font-['Poppins']">
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-premium-600 to-emerald-600 bg-clip-text text-transparent font-['Poppins']">
                 AB GADGETS
               </h1>
-              <p className="text-xs text-orange-600 font-medium -mt-1 font-['Inter']">Premium Gadgets</p>
+              <p className="text-xs text-premium-700 font-medium -mt-1 font-['Inter']">Premium Gadgets</p>
             </div>
           </Link>
           
@@ -39,28 +39,28 @@ const Header = () => {
           <nav className="hidden md:flex items-center space-x-1">
             <Link 
               to="/" 
-              className="flex items-center px-4 py-2 rounded-xl text-orange-700 hover:text-orange-600 text-sm font-medium transition-all duration-300 hover:bg-orange-50 group font-['Inter']"
+              className="flex items-center px-4 py-2 rounded-xl text-premium-700 hover:text-premium-800 text-sm font-medium transition-all duration-300 hover:bg-premium-50 group font-['Inter']"
             >
               <Home className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" />
               Home
             </Link>
             <Link 
               to="/shop" 
-              className="flex items-center px-4 py-2 rounded-xl text-orange-600 hover:text-orange-700 text-sm font-medium transition-all duration-300 hover:bg-orange-50 group font-['Inter']"
+              className="flex items-center px-4 py-2 rounded-xl text-premium-700 hover:text-premium-800 text-sm font-medium transition-all duration-300 hover:bg-premium-50 group font-['Inter']"
             >
               <Store className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" />
               Shop
             </Link>
             <Link 
               to="/categories" 
-              className="flex items-center px-4 py-2 rounded-xl text-orange-600 hover:text-orange-700 text-sm font-medium transition-all duration-300 hover:bg-orange-50 group font-['Inter']"
+              className="flex items-center px-4 py-2 rounded-xl text-premium-700 hover:text-premium-800 text-sm font-medium transition-all duration-300 hover:bg-premium-50 group font-['Inter']"
             >
               <List className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" />
               Categories
             </Link>
             <Link 
               to="/cart" 
-              className="flex items-center px-4 py-2 rounded-xl text-orange-600 hover:text-orange-700 text-sm font-medium transition-all duration-300 hover:bg-orange-50 group relative font-['Inter']"
+              className="flex items-center px-4 py-2 rounded-xl text-premium-700 hover:text-premium-800 text-sm font-medium transition-all duration-300 hover:bg-premium-50 group relative font-['Inter']"
             >
               <ShoppingCart className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" />
               Cart
@@ -72,7 +72,7 @@ const Header = () => {
             </Link>
             <Link 
               to="/admin/login" 
-              className="flex items-center px-4 py-2 rounded-xl text-orange-600 hover:text-orange-700 text-sm font-medium transition-all duration-300 hover:bg-orange-50 group font-['Inter']"
+              className="flex items-center px-4 py-2 rounded-xl text-premium-700 hover:text-premium-800 text-sm font-medium transition-all duration-300 hover:bg-premium-50 group font-['Inter']"
             >
               <User className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" />
               Admin
@@ -85,7 +85,7 @@ const Header = () => {
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 rounded-xl transition-all duration-300"
+              className="text-premium-700 hover:text-premium-800 hover:bg-premium-50 rounded-xl transition-all duration-300"
             >
               {isMenuOpen ? (
                 <X className="w-6 h-6" />
@@ -98,12 +98,12 @@ const Header = () => {
 
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-md rounded-xl shadow-lg border border-orange-200/50 mb-4 animate-slide-down">
+          <div className="md:hidden bg-white/95 backdrop-blur-md rounded-xl shadow-lg border border-premium-200/60 mb-4 animate-slide-down">
             <div className="px-4 py-2 space-y-1">
               <Link 
                 to="/" 
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center px-4 py-3 rounded-xl text-orange-700 hover:text-orange-600 text-sm font-medium transition-all duration-300 hover:bg-orange-50 font-['Inter']"
+                className="flex items-center px-4 py-3 rounded-xl text-premium-700 hover:text-premium-800 text-sm font-medium transition-all duration-300 hover:bg-premium-50 font-['Inter']"
               >
                 <Home className="w-4 h-4 mr-3" />
                 Home
@@ -111,7 +111,7 @@ const Header = () => {
               <Link 
                 to="/shop" 
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center px-4 py-3 rounded-xl text-orange-600 hover:text-orange-700 text-sm font-medium transition-all duration-300 hover:bg-orange-50 font-['Inter']"
+                className="flex items-center px-4 py-3 rounded-xl text-premium-700 hover:text-premium-800 text-sm font-medium transition-all duration-300 hover:bg-premium-50 font-['Inter']"
               >
                 <Store className="w-4 h-4 mr-3" />
                 Shop
@@ -119,7 +119,7 @@ const Header = () => {
               <Link 
                 to="/categories" 
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center px-4 py-3 rounded-xl text-orange-600 hover:text-orange-700 text-sm font-medium transition-all duration-300 hover:bg-orange-50 font-['Inter']"
+                className="flex items-center px-4 py-3 rounded-xl text-premium-700 hover:text-premium-800 text-sm font-medium transition-all duration-300 hover:bg-premium-50 font-['Inter']"
               >
                 <List className="w-4 h-4 mr-3" />
                 Categories
@@ -127,7 +127,7 @@ const Header = () => {
               <Link 
                 to="/cart" 
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center px-4 py-3 rounded-xl text-orange-600 hover:text-orange-700 text-sm font-medium transition-all duration-300 hover:bg-orange-50 relative font-['Inter']"
+                className="flex items-center px-4 py-3 rounded-xl text-premium-700 hover:text-premium-800 text-sm font-medium transition-all duration-300 hover:bg-premium-50 relative font-['Inter']"
               >
                 <ShoppingCart className="w-4 h-4 mr-3" />
                 Cart
@@ -140,7 +140,7 @@ const Header = () => {
               <Link 
                 to="/admin/login" 
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center px-4 py-3 rounded-xl text-orange-600 hover:text-orange-700 text-sm font-medium transition-all duration-300 hover:bg-orange-50 font-['Inter']"
+                className="flex items-center px-4 py-3 rounded-xl text-premium-700 hover:text-premium-800 text-sm font-medium transition-all duration-300 hover:bg-premium-50 font-['Inter']"
               >
                 <User className="w-4 h-4 mr-3" />
                 Admin

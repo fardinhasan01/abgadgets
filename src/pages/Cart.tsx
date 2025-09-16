@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '@/context/CartContext';
+import { getPrice, hasValidDiscount } from '@/lib/utils';
 
 const Cart = () => {
   const { cart: cartItems, updateQuantity, removeFromCart, setCart: setCartItems } = useCart();
@@ -49,7 +50,7 @@ const Cart = () => {
   };
 
   const subtotal = cartItems.reduce((sum, item) => {
-    const price = Number(item.offerPrice || item.mainPrice);
+    const price = getPrice(item);
     return sum + (price * item.quantity);
   }, 0);
   
@@ -93,9 +94,9 @@ const Cart = () => {
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-6">
               {cartItems.map((item, index) => {
-                const offerPrice = Number(item.offerPrice || item.mainPrice);
-                const mainPrice = Number(item.mainPrice || item.price);
-                const hasDiscount = item.offerPrice && item.mainPrice && item.offerPrice < item.mainPrice;
+                const price = getPrice(item);
+                const hasDiscount = hasValidDiscount(item);
+                const originalPrice = Number(item.price);
 
                 return (
                   <Card 
@@ -125,9 +126,13 @@ const Cart = () => {
                         <div className="flex-1">
                           <h3 className="text-xl font-bold text-orange-900 mb-2 line-clamp-2">{item.name}</h3>
                           <div className="flex items-center gap-3">
-                            <p className="text-orange-600 font-bold text-2xl">৳{new Intl.NumberFormat('en-US').format(offerPrice)}</p>
-                            {hasDiscount && (
-                              <span className="text-gray-400 line-through text-lg">৳{new Intl.NumberFormat('en-US').format(mainPrice)}</span>
+                            {hasDiscount ? (
+                              <>
+                                <span className="text-gray-400 line-through text-lg">৳{new Intl.NumberFormat('en-US').format(originalPrice)}</span>
+                                <span className="text-green-600 font-bold text-2xl">৳{new Intl.NumberFormat('en-US').format(price)}</span>
+                              </>
+                            ) : (
+                              <span className="text-orange-600 font-bold text-2xl">৳{new Intl.NumberFormat('en-US').format(price)}</span>
                             )}
                           </div>
                         </div>

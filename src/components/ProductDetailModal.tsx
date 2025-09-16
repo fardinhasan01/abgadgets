@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Star, X, Send, User, Calendar } from 'lucide-react';
+import { Star, X, Send, User, Calendar, Crown, Sparkles } from 'lucide-react';
 import { getProductImageUrl } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
@@ -17,11 +17,11 @@ interface Review {
 }
 
 interface Product {
-  id: string;
+  id: string | number;
   name: string;
   price?: number;
   originalPrice?: number;
-  mainPrice: number;
+  mainPrice?: number;
   offerPrice?: number;
   discount?: number;
   category: string;
@@ -46,7 +46,7 @@ interface ProductDetailModalProps {
 }
 
 // Mock reviews data with Bengali names and text
-const generateMockReviews = (productId: string): Review[] => {
+const generateMockReviews = (productId: string | number): Review[] => {
   const bengaliNames = [
     'মিথিলা আক্তার', 'সুমন হোসেন', 'মাহমুদ রহমান', 'তানজিলা নূর', 
     'রফিক আহমেদ', 'ফাতেমা খাতুন', 'আব্দুল্লাহ আল মামুন', 'সাবরিনা ইয়াসমিন',
@@ -168,10 +168,15 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
     ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length 
     : 0;
 
-  const offerPrice = product?.offerPrice || product?.price;
-  const mainPrice = product?.mainPrice || product?.originalPrice || product?.price;
-  const hasDiscount = offerPrice && mainPrice && offerPrice < mainPrice;
-  const discountPercentage = hasDiscount ? Math.round(((mainPrice - offerPrice) / mainPrice) * 100) : 0;
+  // Fixed price logic - handle both data structures properly
+  const mainPrice = product?.price || product?.mainPrice || 0;
+  const originalPrice = product?.originalPrice || mainPrice;
+  const offerPrice = product?.offerPrice || (product?.discount ? mainPrice : null);
+  
+  // Safe price logic with proper validation
+  const hasDiscount = product && typeof offerPrice === 'number' && offerPrice > 0 && offerPrice < originalPrice;
+  const priceToShow = hasDiscount ? offerPrice : mainPrice;
+  const discountPercentage = hasDiscount ? Math.round(((originalPrice - offerPrice) / originalPrice) * 100) : 0;
 
   // Helper for bengali numbers
   const toBengaliNumber = (num: number) => {
@@ -191,7 +196,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`${sizeClasses[size]} ${star <= rating ? 'text-yellow-500 fill-current' : 'text-gray-300'}`}
+            className={`${sizeClasses[size]} ${star <= rating ? 'text-gold-500 fill-current' : 'text-gray-300'}`}
           />
         ))}
       </div>
@@ -202,17 +207,25 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-white via-premium-50 to-emerald-50 border-premium-200">
         <DialogHeader>
           <DialogTitle className="flex items-center justify-between">
-            <span className="text-xl font-bold text-orange-900">{product.name}</span>
+            <div className="flex items-center gap-3">
+              {product.featured && (
+                <div className="flex items-center gap-2 bg-gradient-to-r from-gold-500 to-yellow-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                  <Crown className="w-4 h-4" />
+                  Premium
+                </div>
+              )}
+              <span className="text-xl font-bold text-premium-900">{product.name}</span>
+            </div>
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="h-8 w-8 p-0"
+              className="h-8 w-8 p-0 hover:bg-premium-100"
             >
-              <X className="h-4 w-4" />
+              <X className="h-4 w-4 text-premium-700" />
             </Button>
           </DialogTitle>
         </DialogHeader>
@@ -220,7 +233,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="aspect-square bg-orange-50 rounded-2xl overflow-hidden">
+            <div className="aspect-square bg-gradient-to-br from-premium-50 to-emerald-50 rounded-2xl overflow-hidden border-2 border-premium-100 shadow-xl">
               <img
                 src={
                   product.mainImageUrl ||
@@ -228,7 +241,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                   "/placeholder.jpg"
                 }
                 alt={product.name}
-                className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
+                className="w-full h-full object-contain rounded-xl"
                 loading="lazy"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
@@ -242,10 +255,10 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           {/* Product Details */}
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-orange-900 mb-2">{product.name}</h2>
+              <h2 className="text-2xl font-bold text-premium-900 mb-2">{product.name}</h2>
               <div className="flex items-center gap-4 mb-4">
                 {renderStars(averageRating, 'lg')}
-                <span className="text-orange-600 font-semibold">{averageRating.toFixed(1)}</span>
+                <span className="text-premium-600 font-semibold">{averageRating.toFixed(1)}</span>
                 <span className="text-gray-500">({reviews.length} reviews)</span>
               </div>
             </div>
@@ -254,31 +267,31 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               <div className="flex items-baseline gap-3">
                 {hasDiscount ? (
                   <>
-                    <span className="text-3xl font-extrabold text-orange-600">
-                      ৳{toBengaliNumber(offerPrice)}
+                    <span className="text-3xl font-extrabold text-premium-600">
+                      ৳{toBengaliNumber(priceToShow)}
                     </span>
                     <span className="text-xl text-gray-400 line-through">
-                      ৳{toBengaliNumber(mainPrice)}
+                      ৳{toBengaliNumber(originalPrice)}
                     </span>
-                    <span className="bg-orange-100 text-orange-600 px-2 py-1 rounded-full text-sm font-semibold">
+                    <span className="bg-premium-100 text-premium-600 px-3 py-1 rounded-full text-sm font-semibold border border-premium-200">
                       {toBengaliNumber(discountPercentage)}% ছাড়
                     </span>
                   </>
                 ) : (
-                  <span className="text-3xl font-extrabold text-orange-600">
-                    ৳{toBengaliNumber(mainPrice)}
+                  <span className="text-3xl font-extrabold text-premium-600">
+                    ৳{toBengaliNumber(originalPrice)}
                   </span>
                 )}
               </div>
 
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-orange-600 bg-orange-100 px-3 py-1 rounded-full">
+                <span className="text-sm font-medium text-premium-600 bg-premium-100 px-3 py-1 rounded-full border border-premium-200">
                   {product.category}
                 </span>
-                <span className={`text-sm font-medium px-3 py-1 rounded-full ${
+                <span className={`text-sm font-medium px-3 py-1 rounded-full border ${
                   product.inStock 
-                    ? 'text-green-600 bg-green-100' 
-                    : 'text-red-600 bg-red-100'
+                    ? 'text-emerald-600 bg-emerald-100 border-emerald-200' 
+                    : 'text-red-600 bg-red-100 border-red-200'
                 }`}>
                   {product.inStock ? 'In Stock' : 'Out of Stock'}
                 </span>
@@ -286,7 +299,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
 
               {product.description && (
                 <div>
-                  <h3 className="font-semibold text-orange-900 mb-2">Description</h3>
+                  <h3 className="font-semibold text-premium-900 mb-2">Description</h3>
                   <p className="text-gray-700 leading-relaxed">{product.description}</p>
                 </div>
               )}
@@ -297,8 +310,9 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               <Button
                 onClick={() => handleDirectOrder(product)}
                 disabled={!product.inStock}
-                className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-orange-200/50 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-premium-500 to-emerald-600 hover:from-premium-600 hover:to-emerald-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg hover:shadow-premium-200/50 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed border-0"
               >
+                <Sparkles className="w-4 h-4 mr-2" />
                 Order Now
               </Button>
               
@@ -306,7 +320,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                 onClick={() => handleAddToCart(product)}
                 disabled={!product.inStock}
                 variant="outline"
-                className="w-full border-orange-300 text-orange-700 hover:bg-orange-50 hover:border-orange-400 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full border-premium-300 text-premium-700 hover:bg-premium-50 hover:border-premium-400 font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Add to Cart
               </Button>
@@ -315,54 +329,54 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
         </div>
 
         {/* Reviews Section */}
-        <div className="mt-12 border-t border-orange-200 pt-8">
-          <h3 className="text-2xl font-bold text-orange-900 mb-6">Customer Reviews</h3>
+        <div className="mt-12 border-t border-premium-200 pt-8">
+          <h3 className="text-2xl font-bold text-premium-900 mb-6">Customer Reviews</h3>
           
           {/* Review Summary */}
-          <div className="bg-orange-50 rounded-xl p-6 mb-8">
+          <div className="bg-gradient-to-r from-premium-50 to-emerald-50 rounded-xl p-6 mb-8 border border-premium-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 {renderStars(averageRating, 'lg')}
                 <div>
-                  <div className="text-2xl font-bold text-orange-900">{averageRating.toFixed(1)}</div>
-                  <div className="text-orange-600">out of 5</div>
+                  <div className="text-2xl font-bold text-premium-900">{averageRating.toFixed(1)}</div>
+                  <div className="text-premium-600">out of 5</div>
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-lg font-semibold text-orange-900">{reviews.length}</div>
-                <div className="text-orange-600">total reviews</div>
+                <div className="text-lg font-semibold text-premium-900">{reviews.length}</div>
+                <div className="text-premium-600">total reviews</div>
               </div>
             </div>
           </div>
 
           {/* Add Review Form */}
-          <div className="bg-white border border-orange-200 rounded-xl p-6 mb-8">
-            <h4 className="text-lg font-semibold text-orange-900 mb-4">Write a Review</h4>
+          <div className="bg-white border border-premium-200 rounded-xl p-6 mb-8 shadow-lg">
+            <h4 className="text-lg font-semibold text-premium-900 mb-4">Write a Review</h4>
             <form onSubmit={handleSubmitReview} className="space-y-4">
               <div>
-                <Label htmlFor="reviewName" className="text-orange-700">Your Name</Label>
+                <Label htmlFor="reviewName" className="text-premium-700">Your Name</Label>
                 <Input
                   id="reviewName"
                   value={newReview.name}
                   onChange={(e) => setNewReview(prev => ({ ...prev, name: e.target.value }))}
                   placeholder="আপনার নাম লিখুন"
-                  className="border-orange-200 focus:border-orange-400"
+                  className="border-premium-200 focus:border-premium-400 focus:ring-premium-200"
                   required
                 />
               </div>
               
               <div>
-                <Label htmlFor="reviewRating" className="text-orange-700">Rating</Label>
+                <Label htmlFor="reviewRating" className="text-premium-700">Rating</Label>
                 <div className="flex items-center gap-2 mt-2">
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
                       type="button"
                       onClick={() => setNewReview(prev => ({ ...prev, rating: star }))}
-                      className="focus:outline-none"
+                      className="focus:outline-none hover:scale-110 transition-transform"
                     >
                       <Star
-                        className={`w-6 h-6 ${star <= newReview.rating ? 'text-yellow-500 fill-current' : 'text-gray-300'} hover:text-yellow-400 transition-colors`}
+                        className={`w-6 h-6 ${star <= newReview.rating ? 'text-gold-500 fill-current' : 'text-gray-300'} hover:text-gold-400 transition-colors`}
                       />
                     </button>
                   ))}
@@ -370,13 +384,13 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               </div>
               
               <div>
-                <Label htmlFor="reviewText" className="text-orange-700">Your Review</Label>
+                <Label htmlFor="reviewText" className="text-premium-700">Your Review</Label>
                 <Textarea
                   id="reviewText"
                   value={newReview.reviewText}
                   onChange={(e) => setNewReview(prev => ({ ...prev, reviewText: e.target.value }))}
                   placeholder="আপনার অভিজ্ঞতা শেয়ার করুন..."
-                  className="border-orange-200 focus:border-orange-400 min-h-[100px]"
+                  className="border-premium-200 focus:border-premium-400 focus:ring-premium-200 min-h-[100px]"
                   required
                 />
               </div>
@@ -384,7 +398,7 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
               <Button
                 type="submit"
                 disabled={isSubmittingReview}
-                className="bg-orange-600 hover:bg-orange-700 text-white"
+                className="bg-premium-600 hover:bg-premium-700 text-white border-0"
               >
                 {isSubmittingReview ? (
                   <div className="flex items-center">
@@ -404,14 +418,14 @@ const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
           {/* Reviews List */}
           <div className="space-y-6 max-h-96 overflow-y-auto">
             {reviews.slice(0, 10).map((review) => (
-              <div key={review.id} className="bg-white border border-orange-200 rounded-xl p-6">
+              <div key={review.id} className="bg-white border border-premium-200 rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                      <User className="w-5 h-5 text-orange-600" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-premium-100 to-emerald-100 rounded-full flex items-center justify-center border border-premium-200">
+                      <User className="w-5 h-5 text-premium-600" />
                     </div>
                     <div>
-                      <div className="font-semibold text-orange-900">{review.reviewerName}</div>
+                      <div className="font-semibold text-premium-900">{review.reviewerName}</div>
                       <div className="flex items-center gap-2">
                         {renderStars(review.rating, 'sm')}
                         <span className="text-sm text-gray-500">
