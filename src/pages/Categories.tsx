@@ -126,7 +126,7 @@ const CategoriesPage: React.FC = () => {
       {/* Animated Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-orange-50 via-yellow-50 to-white animate-pulse-slow"></div>
       
-      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 z-10">
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 z-10">
         {/* Categories List */}
         <div className="mb-8 animate-slide-up">
           <h2 className="text-2xl font-bold text-orange-900 mb-4">Categories</h2>
@@ -147,8 +147,8 @@ const CategoriesPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Enhanced Filters */}
-        <div className="mb-8 p-6 bg-white rounded-2xl shadow-xl border border-orange-200/50 animate-slide-up">
+        {/* Enhanced Filters (shrunk) */}
+        <div className="mb-6 p-4 bg-white rounded-2xl shadow-xl border border-orange-200/50 animate-slide-up">
           <div className="flex flex-col lg:flex-row gap-6">
             {/* Search Input */}
             <div className="relative flex-1 group">
@@ -158,7 +158,7 @@ const CategoriesPage: React.FC = () => {
                 placeholder="Search products in this category..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-12 w-full bg-orange-50 border-orange-200 text-orange-900 placeholder-orange-500/60 focus:border-orange-400 focus:ring-orange-400/20 rounded-xl h-12 text-lg transition-all duration-300 hover:bg-orange-100 focus:bg-white"
+                className="pl-12 w-full bg-orange-50 border-orange-200 text-orange-900 placeholder-orange-500/60 focus:border-orange-400 focus:ring-orange-400/20 rounded-xl h-11 text-base transition-all duration-300 hover:bg-orange-100 focus:bg-white"
               />
             </div>
             
@@ -168,7 +168,7 @@ const CategoriesPage: React.FC = () => {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="pl-12 pr-8 py-3 bg-orange-50 border border-orange-200 rounded-xl text-orange-900 focus:border-orange-400 focus:ring-orange-400/20 h-12 text-lg font-medium appearance-none cursor-pointer transition-all duration-300 hover:bg-orange-100 focus:bg-white"
+                className="pl-12 pr-8 py-2.5 bg-orange-50 border border-orange-200 rounded-xl text-orange-900 focus:border-orange-400 focus:ring-orange-400/20 h-11 text-base font-medium appearance-none cursor-pointer transition-all duration-300 hover:bg-orange-100 focus:bg-white"
               >
                 {categories.map((cat) => (
                   <option key={cat} value={cat} className="text-orange-900">{cat}</option>
@@ -209,7 +209,7 @@ const CategoriesPage: React.FC = () => {
             <div className="flex items-center">
               <button
                 onClick={() => navigate('/shop')}
-                className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-md group flex items-center"
+                className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg shadow-md group flex items-center text-sm"
               >
                 <Sparkles className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-300" />
                 Shop All
@@ -230,7 +230,7 @@ const CategoriesPage: React.FC = () => {
         ) : (
           <div className={`animate-fade-in ${
             viewMode === 'grid' 
-              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8' 
+              ? 'grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6' 
               : 'space-y-6'
           }`}>
             {filteredProducts.map((product, index) => (

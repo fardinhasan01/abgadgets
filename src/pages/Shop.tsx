@@ -140,18 +140,18 @@ const Shop = () => {
       {/* Animated Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-orange-50 via-orange-50 to-white animate-pulse-slow"></div>
       
-      {/* Header */}
-      <div className="bg-gradient-to-r from-orange-50/80 to-orange-100/80 pt-12 pb-20">
+      {/* Header (shrunk) */}
+      <div className="bg-gradient-to-r from-orange-50/80 to-orange-100/80 pt-8 pb-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 bg-clip-text text-transparent mb-6">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 bg-clip-text text-transparent mb-3">
             সব পণ্য
           </h1>
-          <p className="text-orange-700/80 text-xl font-medium max-w-2xl mx-auto mb-8">
+          <p className="text-orange-700/80 text-base md:text-lg font-medium max-w-2xl mx-auto mb-6">
             আমাদের সেরা সকল পণ্য এখনই দেখুন
           </p>
           <Button 
             onClick={() => navigate('/categories')}
-            className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-8 py-4 rounded-xl text-lg"
+            className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-3 rounded-xl text-base"
           >
             <List className="w-5 h-5 mr-2" />
             ক্যাটাগরি দেখুন
@@ -160,7 +160,7 @@ const Shop = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 z-10 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 z-10 relative">
         {/* Search and Filter */}
         <Card className="bg-white/90 backdrop-blur-sm border-orange-200 rounded-2xl shadow-xl mb-8">
           <CardContent className="p-6">

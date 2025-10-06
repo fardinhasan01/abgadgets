@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet, useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
@@ -21,11 +21,23 @@ import FloatingContactButton from './components/FloatingContactButton';
 
 const queryClient = new QueryClient();
 
+const ScrollToTopOnce: React.FC = () => {
+  const location = useLocation();
+  React.useEffect(() => {
+    // Scroll to top on every route change once
+    try {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch {}
+  }, [location.pathname]);
+  return null;
+};
+
 const MainLayout = () => (
   <>
+    <ScrollToTopOnce />
     <TopBanner />
     <Header />
-    <main className="pt-10"> {/* Adjusted padding to reduce gap */}
+    <main className="pt-10">
       <Outlet />
     </main>
     <BottomNav />

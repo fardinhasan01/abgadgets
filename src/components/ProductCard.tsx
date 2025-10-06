@@ -131,7 +131,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, handleAddToCart, han
       {/* Content */}
       <CardContent className="p-6 space-y-4">
         {/* Product Name */}
-        <h3 className="text-lg font-bold text-orange-900 line-clamp-2 h-14 leading-tight group-hover:text-orange-700 transition-colors duration-300">
+        <h3 className="text-base sm:text-lg font-semibold text-orange-900 line-clamp-2 h-12 leading-snug group-hover:text-orange-700 transition-colors duration-300">
           {product.name}
         </h3>
         

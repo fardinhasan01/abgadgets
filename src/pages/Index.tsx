@@ -181,7 +181,7 @@ const Index = () => {
 
       {/* Hero Section with Rotating Image Banners */}
       <section className="relative min-h-[160px] flex items-center justify-center overflow-hidden mb-0 pb-0 bg-gradient-to-r from-orange-700 to-orange-600">
-        <div className="absolute inset-0 w-full h-40 sm:h-56 md:h-72 rounded-2xl overflow-hidden shadow-2xl mx-auto mt-2 mb-0 pb-0">
+        <div className="absolute inset-0 w-full h-40 sm:h-48 md:h-64 rounded-2xl overflow-hidden shadow-2xl mx-auto mt-2 mb-0 pb-0">
           <img
             src={banners[currentBanner].image}
             alt={banners[currentBanner].alt}
@@ -189,19 +189,18 @@ const Index = () => {
             style={{ opacity: 1 }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-orange-900/40 via-transparent to-transparent rounded-2xl"></div>
+          {/* CTA on banner */}
+          <div className="absolute inset-x-0 bottom-3 flex justify-center z-20">
+            <Button onClick={() => navigate('/shop')} className="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 text-sm sm:text-base rounded-xl shadow-lg">
+              <Sparkles className="w-4 h-4 mr-2" />
+              শপ এখনই
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </div>
         </div>
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center w-full">
-        </div>
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center w-full"></div>
       </section>
 
-      {/* Shop Now button */}
-      <div className="w-full flex justify-center mt-6 mb-0">
-        <Button onClick={() => navigate('/shop')} className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 text-base rounded-xl shadow-lg">
-          <Sparkles className="w-4 h-4 mr-2" />
-          শপ এখনই
-          <ArrowRight className="w-4 h-4 ml-2" />
-        </Button>
-      </div>
 
       {/* Removed green categories strip for simplicity */}
 

@@ -388,8 +388,8 @@ const Checkout = () => {
             </Card>
           </div>
           
-          {/* Order Summary - Mobile Optimized */}
-          <div className="lg:col-span-1">
+          {/* Order Summary - show first on mobile */}
+          <div className="lg:col-span-1 order-first lg:order-last">
             <Card className="bg-white/90 backdrop-blur-xl border border-orange-200/60 lg:sticky lg:top-24">
               <CardHeader>
                 <CardTitle className="text-orange-900 flex items-center gap-2">
@@ -407,7 +407,7 @@ const Checkout = () => {
                     
                     return (
                       <div key={item.id} className="flex items-center space-x-3 p-3 bg-orange-50 rounded-lg">
-                        <div className="w-12 h-12 bg-white rounded-lg flex-shrink-0">
+                        <div className="w-14 h-14 bg-white rounded-lg flex-shrink-0 overflow-hidden">
                           <img
                             src={
                               item.mainImageUrl ||
@@ -415,7 +415,7 @@ const Checkout = () => {
                               "/placeholder.jpg"
                             }
                             alt={item.name}
-                            className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
+                            className="w-full h-full object-contain"
                             loading="lazy"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
@@ -426,6 +426,13 @@ const Checkout = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <h4 className="text-sm font-medium text-orange-900 truncate">{item.name}</h4>
+                          <div className="flex items-center gap-1 text-amber-500">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <svg key={i} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
+                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                              </svg>
+                            ))}
+                          </div>
                           <div className="flex items-center gap-2">
                             {hasDiscount ? (
                               <>
