@@ -177,16 +177,10 @@ const Index = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Animated Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-premium-50 via-emerald-50 to-white animate-pulse-slow"></div>
-      <div className="fixed inset-0 bg-gradient-to-tr from-transparent via-premium-200/20 to-transparent animate-pulse-slow" style={{ animationDelay: '4s' }}></div>
-      
-      {/* Floating Elements */}
-      <div className="fixed top-20 left-10 w-32 h-32 bg-emerald-300/20 rounded-full blur-xl animate-float"></div>
-      <div className="fixed bottom-20 right-10 w-40 h-40 bg-premium-400/15 rounded-full blur-xl animate-float" style={{ animationDelay: '2s' }}></div>
-      <div className="fixed top-1/2 left-1/4 w-24 h-24 bg-premium-500/10 rounded-full blur-lg animate-float" style={{ animationDelay: '4s' }}></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-orange-50 via-orange-50 to-white animate-pulse-slow"></div>
 
       {/* Hero Section with Rotating Image Banners */}
-      <section className="relative min-h-[160px] flex items-center justify-center overflow-hidden mb-0 pb-0 bg-gradient-to-r from-premium-900 to-emerald-900">
+      <section className="relative min-h-[160px] flex items-center justify-center overflow-hidden mb-0 pb-0 bg-gradient-to-r from-orange-700 to-orange-600">
         <div className="absolute inset-0 w-full h-40 sm:h-56 md:h-72 rounded-2xl overflow-hidden shadow-2xl mx-auto mt-2 mb-0 pb-0">
           <img
             src={banners[currentBanner].image}
@@ -194,107 +188,43 @@ const Index = () => {
             className="w-full h-full object-cover object-center rounded-2xl"
             style={{ opacity: 1 }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-premium-900/60 via-transparent to-transparent rounded-2xl"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-orange-900/40 via-transparent to-transparent rounded-2xl"></div>
         </div>
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center flex flex-col items-center justify-center w-full">
         </div>
       </section>
 
-      {/* Shop Now button directly under banner, centered, with mt-4 */}
+      {/* Shop Now button */}
       <div className="w-full flex justify-center mt-6 mb-0">
-        <Button onClick={() => navigate('/shop')} className="bg-gradient-to-r from-premium-600 to-emerald-600 hover:from-premium-700 hover:to-emerald-700 text-white px-8 py-4 text-lg rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 animate-glow">
-          <Sparkles className="w-5 h-5 mr-2" />
-          Shop Now
-          <ArrowRight className="w-5 h-5 ml-2" />
+        <Button onClick={() => navigate('/shop')} className="bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 text-base rounded-xl shadow-lg">
+          <Sparkles className="w-4 h-4 mr-2" />
+          শপ এখনই
+          <ArrowRight className="w-4 h-4 ml-2" />
         </Button>
       </div>
 
-      {/* Horizontally scrolling categories banner */}
-      <div className="overflow-x-auto whitespace-nowrap scroll-smooth py-3 px-2 animate-scroll-slow bg-gradient-to-r from-premium-900 via-emerald-900 to-premium-900 h-20 flex items-center">
-        {categories.map(cat => (
-          <span key={cat} className="inline-block bg-gradient-to-r from-premium-600/90 to-emerald-600/90 backdrop-blur-sm text-white px-4 py-2 rounded-xl mr-4 shadow-lg hover:from-premium-500 hover:to-emerald-500 transition-all duration-300 border border-premium-400/30">
-            {cat}
-          </span>
-        ))}
-      </div>
+      {/* Removed green categories strip for simplicity */}
 
-      {/* Categories Section */}
-      <section className="px-4 py-12 bg-gradient-to-br from-premium-900 via-emerald-900 to-premium-900 text-white">
+      {/* Simple product grid like Shop (2 columns on mobile) */}
+      <section className="px-4 py-6">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold mb-4 flex items-center justify-center">
-              <Sparkles className="w-8 h-8 mr-3 text-premium-300" />
-              Browse Categories
-            </h2>
-            <p className="text-premium-200 text-lg">Discover our premium collection</p>
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-8">
-            {categories.map(category => (
-              <button
-                key={category}
-                className={`bg-gradient-to-r from-premium-600/80 to-emerald-600/80 backdrop-blur-sm rounded-2xl py-6 font-semibold hover:from-premium-500 hover:to-emerald-500 transition-all duration-300 cursor-pointer w-full transform hover:scale-105 border border-premium-400/30 shadow-lg ${activeCategory === category ? 'ring-2 ring-premium-400 from-premium-500 to-emerald-500' : ''}`}
-                onClick={() => setActiveCategory(category)}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 mt-10">
-            {filteredProducts.map(product => (
-              <div
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            {products.map((product) => (
+              <ProductCard
                 key={product.id}
-                className="bg-gradient-to-r from-premium-600/60 to-emerald-600/60 backdrop-blur-sm rounded-2xl p-4 shadow-lg cursor-pointer transform hover:scale-105 transition-all duration-300 hover:shadow-premium-500/20 border border-premium-400/30"
-              >
-                <img
-                  src={
-                    product.mainImageUrl ||
-                    (Array.isArray(product.image) ? product.image[0] : product.image) ||
-                    "/placeholder.jpg"
-                  }
-                  alt={product.name}
-                  className="w-full h-48 object-contain rounded-xl shadow bg-premium-50"
-                  loading="lazy"
-                  onError={(e) => {
-                    // Fallback to placeholder if any error occurs
-                    const target = e.target as HTMLImageElement;
-                    target.src = '/placeholder.jpg';
-                    target.onerror = null;
-                  }}
-                />
-                <h3 className="text-white font-semibold line-clamp-2 text-sm">{product.name}</h3>
-                <div className="price-section mt-2 flex items-center gap-2">
-                  {(() => {
-                    const mainPrice = product.price || product.mainPrice;
-                    const offerPrice = product.offerPrice || (product.originalPrice && product.price < product.originalPrice ? product.price : null);
-                    const originalPrice = product.originalPrice || product.price;
-                    const hasDiscount = typeof offerPrice === 'number' && offerPrice > 0 && offerPrice < originalPrice;
-                    
-                    return hasDiscount ? (
-                      <>
-                        <span className="offer-price text-lg font-bold text-emerald-300">
-                          ৳{offerPrice}
-                        </span>
-                        <span className="main-price text-premium-200 line-through text-base">
-                          ৳{originalPrice}
-                        </span>
-                        <span className="discount text-premium-200 text-sm font-semibold">
-                          ({Math.round(((originalPrice - offerPrice) / originalPrice) * 100)}% off)
-                        </span>
-                      </>
-                    ) : (
-                      <span className="offer-price text-lg font-bold text-emerald-300">
-                        ৳{mainPrice}
-                      </span>
-                    );
-                  })()}
-                </div>
-              </div>
+                product={product as any}
+                handleAddToCart={handleAddToCart}
+                handleDirectOrder={handleDirectOrder}
+                onProductClick={handleProductClick}
+              />
             ))}
           </div>
         </div>
       </section>
 
+      {/* Removed extra sections for simplicity */}
       {/* Trending Now */}
+      {/*
       <section className="py-20 bg-transparent">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-fade-in">
@@ -330,7 +260,7 @@ const Index = () => {
       </section>
 
       {/* Latest Products */}
-      <section className="py-20 bg-transparent">
+      <section className="py-20 bg-transparent hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-fade-in">
             <div className="inline-flex items-center gap-2 mb-4">
@@ -365,7 +295,7 @@ const Index = () => {
       </section>
 
       {/* Featured Products */}
-      <section className="py-20 bg-transparent">
+      <section className="py-20 bg-transparent hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-fade-in">
             <div className="inline-flex items-center gap-2 mb-4">
@@ -400,7 +330,7 @@ const Index = () => {
       </section>
 
       {/* Hot Deals Section */}
-      {hotDeals.length > 0 && (
+      {false && hotDeals.length > 0 && (
         <section className="py-20 bg-transparent">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12 animate-fade-in">
@@ -437,7 +367,7 @@ const Index = () => {
       )}
 
       {/* Features Section */}
-      <section className="py-20 bg-transparent">
+      <section className="py-20 bg-transparent hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 animate-fade-in">
             <h2 className="text-4xl font-bold bg-gradient-to-r from-premium-600 to-emerald-600 bg-clip-text text-transparent mb-4">
@@ -487,7 +417,7 @@ const Index = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-gradient-to-r from-premium-500/10 to-emerald-500/10">
+      <section className="py-12 bg-gradient-to-r from-orange-500/5 to-orange-500/5">
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
           <div className="bg-white/80 backdrop-blur-xl rounded-3xl p-12 shadow-2xl border border-premium-200/50">
             <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-premium-600 to-emerald-600 bg-clip-text text-transparent mb-6">
@@ -497,9 +427,9 @@ const Index = () => {
               আজই অর্ডার করুন এবং পেয়ে যান দ্রুত ডেলিভারি
             </p>
             <Link to="/shop">
-              <Button className="bg-gradient-to-r from-premium-600 to-emerald-600 hover:from-premium-700 hover:to-emerald-700 text-white px-10 py-4 text-lg rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300 animate-glow">
+              <Button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3 text-base rounded-xl shadow-lg">
                 <Package className="w-5 h-5 mr-2" />
-                Start Shopping Now
+                এখনই শপিং করুন
               </Button>
             </Link>
           </div>

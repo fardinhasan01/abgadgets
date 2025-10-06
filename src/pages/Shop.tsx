@@ -138,23 +138,23 @@ const Shop = () => {
   return (
     <div className="min-h-screen relative overflow-hidden">
       {/* Animated Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-premium-50 via-emerald-50 to-white animate-pulse-slow"></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-orange-50 via-orange-50 to-white animate-pulse-slow"></div>
       
       {/* Header */}
-      <div className="bg-gradient-to-r from-premium-50/80 to-emerald-50/80 pt-12 pb-20">
+      <div className="bg-gradient-to-r from-orange-50/80 to-orange-100/80 pt-12 pb-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-premium-600 via-emerald-600 to-premium-600 bg-clip-text text-transparent mb-6">
-            Shop All Products
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 bg-clip-text text-transparent mb-6">
+            সব পণ্য
           </h1>
-          <p className="text-premium-700/80 text-xl font-medium max-w-2xl mx-auto mb-8">
-            Discover our complete collection of premium gadgets and accessories
+          <p className="text-orange-700/80 text-xl font-medium max-w-2xl mx-auto mb-8">
+            আমাদের সেরা সকল পণ্য এখনই দেখুন
           </p>
           <Button 
             onClick={() => navigate('/categories')}
-            className="bg-premium-600 hover:bg-premium-700 text-white font-semibold px-8 py-4 rounded-xl text-lg"
+            className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-8 py-4 rounded-xl text-lg"
           >
             <List className="w-5 h-5 mr-2" />
-            Browse By Category Page
+            ক্যাটাগরি দেখুন
             <ArrowRight className="w-5 h-5 ml-2" />
           </Button>
         </div>
@@ -162,14 +162,14 @@ const Shop = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-16 z-10 relative">
         {/* Search and Filter */}
-        <Card className="bg-white/90 backdrop-blur-sm border-premium-200 rounded-2xl shadow-xl mb-8">
+        <Card className="bg-white/90 backdrop-blur-sm border-orange-200 rounded-2xl shadow-xl mb-8">
           <CardContent className="p-6">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-grow">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input
                   type="text"
-                  placeholder="Search products..."
+                  placeholder="পণ্য খুঁজুন..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 w-full"
@@ -186,7 +186,7 @@ const Shop = () => {
                     key={category}
                     variant={selectedCategory === category ? 'default' : 'outline'}
                     onClick={() => setSelectedCategory(category)}
-                    className={`whitespace-nowrap ${selectedCategory === category ? 'bg-premium-600 hover:bg-premium-700 text-white' : 'border-premium-200 text-premium-700 hover:bg-premium-50'}`}
+                    className={`whitespace-nowrap ${selectedCategory === category ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'border-orange-200 text-orange-700 hover:bg-orange-50'}`}
                   >
                     {category}
                   </Button>
@@ -198,7 +198,7 @@ const Shop = () => {
 
         {/* Product Grid */}
         {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="space-y-4">
                 <Skeleton className="h-56 w-full rounded-2xl" />
@@ -209,7 +209,7 @@ const Shop = () => {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {filteredProducts.map((product) => (
               <ProductCard
                 key={product.id}
@@ -224,8 +224,8 @@ const Shop = () => {
 
         {!loading && filteredProducts.length === 0 && (
           <div className="text-center py-20 col-span-full">
-            <h2 className="text-2xl font-bold text-premium-800">No Products Found</h2>
-            <p className="text-premium-700 mt-2">Try adjusting your search or filters.</p>
+            <h2 className="text-2xl font-bold text-orange-800">কোন পণ্য পাওয়া যায়নি</h2>
+            <p className="text-orange-700 mt-2">আপনার খোঁজ বা ফিল্টার পরিবর্তন করুন।</p>
           </div>
         )}
       </div>

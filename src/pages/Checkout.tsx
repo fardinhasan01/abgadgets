@@ -34,6 +34,11 @@ const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
   const [deliveryLocation, setDeliveryLocation] = useState('dhaka');
 
+  const toBn = (num: number) => {
+    const map: Record<string, string> = { '0':'০','1':'১','2':'২','3':'৩','4':'৪','5':'৫','6':'৬','7':'৭','8':'৮','9':'৯' };
+    return String(num).replace(/[0-9]/g, d => map[d]);
+  };
+
   useEffect(() => {
     // Support direct checkout via buyNowItem in location.state
     if (location.state && location.state.buyNowItem) {
@@ -113,19 +118,38 @@ const Checkout = () => {
       return;
     }
 
+    // Front-end validation for required fields
+    const requiredFields: Array<{ key: keyof typeof formData; label: string }> = [
+      { key: 'firstName', label: 'নামের প্রথম অংশ' },
+      { key: 'lastName', label: 'নামের শেষ অংশ' },
+      { key: 'phone', label: 'ফোন' },
+      { key: 'address', label: 'ঠিকানা' },
+      { key: 'deliveryArea', label: 'ডেলিভারি এরিয়া' },
+    ];
+    const missing = requiredFields.find(f => !String(formData[f.key] || '').trim());
+    if (missing) {
+      toast({
+        title: 'তথ্য প্রয়োজন',
+        description: `${missing.label} পূরণ করুন`,
+        variant: 'destructive'
+      });
+      const el = document.getElementById(missing.key as string) as HTMLInputElement | null;
+      el?.focus();
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
       // Prepare order data
       const orderProducts = cartItems.map(item => {
         const price = getPrice(item);
-        
         return {
-          id: item.id,
-          name: item.name,
-          price: price,
-          quantity: item.quantity || 1,
-          mainImageUrl: item.mainImageUrl,
+          id: String(item.id || ''),
+          name: String(item.name || ''),
+          price: Number(price || 0),
+          quantity: Number(item.quantity || 1),
+          mainImageUrl: String(item.mainImageUrl || ''),
         };
       });
       const orderData = {
@@ -133,16 +157,22 @@ const Checkout = () => {
         totalPrice: orderProducts.reduce((sum, item) => sum + item.price * item.quantity, 0) + deliveryCharge,
         deliveryCharge,
         customer: {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          deliveryArea: formData.deliveryArea
+          firstName: formData.firstName || '',
+          lastName: formData.lastName || '',
+          email: formData.email || '',
+          phone: formData.phone || '',
+          address: formData.address || '',
+          deliveryArea: formData.deliveryArea || ''
         },
-        items: cartItems,
-        paymentMethod: formData.paymentMethod,
-        bkashNumber: formData.paymentMethod === 'bkash' ? formData.bkashNumber : null,
+        items: cartItems.map((item: any) => ({
+          id: String(item.id || ''),
+          name: String(item.name || ''),
+          price: Number(getPrice(item) || 0),
+          quantity: Number(item.quantity || 1),
+          mainImageUrl: String(item.mainImageUrl || ''),
+        })) ?? [],
+        paymentMethod: formData.paymentMethod || 'cod',
+        bkashNumber: formData.paymentMethod === 'bkash' ? (formData.bkashNumber || '') : null,
         pricing: {
           subtotal: totalProductCost,
           deliveryCharge,
@@ -198,17 +228,17 @@ const Checkout = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-premium-50 via-emerald-50 to-white relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-orange-50 to-white relative overflow-hidden">
       {/* Animated Background */}
-      <div className="fixed inset-0 bg-gradient-to-br from-premium-50 via-emerald-50 to-white animate-pulse-slow"></div>
+      <div className="fixed inset-0 bg-gradient-to-br from-orange-50 via-orange-50 to-white animate-pulse-slow"></div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10 pb-24 lg:pb-8 checkout-container">
         <div className="text-center mb-12">
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-premium-600 via-emerald-600 to-premium-600 bg-clip-text text-transparent mb-6">
-            Secure Checkout
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 bg-clip-text text-transparent mb-6">
+            চেকআউট
           </h1>
-          <p className="text-premium-700/80 text-xl font-medium max-w-2xl mx-auto">
-            Almost there! Complete your order below.
+          <p className="text-orange-700/80 text-xl font-medium max-w-2xl mx-auto">
+            নিচের তথ্য পূরণ করে আপনার অর্ডারটি সম্পন্ন করুন।
           </p>
         </div>
         
@@ -216,41 +246,41 @@ const Checkout = () => {
           {/* Main Checkout Form */}
           <div className="lg:col-span-2 space-y-6">
             {/* Shipping Information */}
-            <Card className="bg-white/90 backdrop-blur-xl border border-premium-200/50">
+            <Card className="bg-white/90 backdrop-blur-xl border border-orange-200/60">
               <CardHeader>
-                <CardTitle className="text-premium-900 flex items-center gap-2">
+                <CardTitle className="text-orange-900 flex items-center gap-2">
                   <User className="w-5 h-5" />
-                  Shipping Information
+                  আপনার তথ্য
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="firstName" className="text-premium-700">First Name</Label>
+                    <Label htmlFor="firstName" className="text-orange-700">নামের প্রথম অংশ</Label>
                     <Input
                       id="firstName"
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleInputChange}
                       required
-                      className="border-premium-200 focus:border-premium-400"
+                      className="border-orange-200 focus:border-orange-400"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="lastName" className="text-premium-700">Last Name</Label>
+                    <Label htmlFor="lastName" className="text-orange-700">নামের শেষ অংশ</Label>
                     <Input
                       id="lastName"
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleInputChange}
                       required
-                      className="border-premium-200 focus:border-premium-400"
+                      className="border-orange-200 focus:border-orange-400"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="email" className="text-premium-700">Email</Label>
+                    <Label htmlFor="email" className="text-orange-700">ইমেল</Label>
                     <Input
                       id="email"
                       name="email"
@@ -258,77 +288,77 @@ const Checkout = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="border-premium-200 focus:border-premium-400"
+                      className="border-orange-200 focus:border-orange-400"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="phone" className="text-premium-700">Phone</Label>
+                    <Label htmlFor="phone" className="text-orange-700">ফোন</Label>
                     <Input
                       id="phone"
                       name="phone"
                       value={formData.phone}
                       onChange={handleInputChange}
                       required
-                      className="border-premium-200 focus:border-premium-400"
+                      className="border-orange-200 focus:border-orange-400"
                     />
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="address" className="text-premium-700">Address</Label>
+                  <Label htmlFor="address" className="text-orange-700">ঠিকানা</Label>
                   <Input
                     id="address"
                     name="address"
                     value={formData.address}
                     onChange={handleInputChange}
                     required
-                    className="border-premium-200 focus:border-premium-400"
+                    className="border-orange-200 focus:border-orange-400"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="deliveryArea" className="text-premium-700">Delivery Area</Label>
+                  <Label htmlFor="deliveryArea" className="text-orange-700">ডেলিভারি এরিয়া</Label>
                   <Input
                     id="deliveryArea"
                     name="deliveryArea"
                     value={formData.deliveryArea}
                     onChange={handleInputChange}
                     required
-                    placeholder="e.g., Dhaka, Gulshan"
-                    className="border-premium-200 focus:border-premium-400"
+                    placeholder="উদাহরণ: ঢাকা, গুলশান"
+                    className="border-orange-200 focus:border-orange-400"
                   />
                 </div>
               </CardContent>
             </Card>
 
             {/* Payment Method */}
-            <Card className="bg-white/90 backdrop-blur-xl border border-premium-200/50">
+            <Card className="bg-white/90 backdrop-blur-xl border border-orange-200/60">
               <CardHeader>
-                <CardTitle className="text-premium-900 flex items-center gap-2">
+                <CardTitle className="text-orange-900 flex items-center gap-2">
                   <CreditCard className="w-5 h-5" />
-                  Payment Method
+                  পেমেন্ট পদ্ধতি
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <RadioGroup value={formData.paymentMethod} onValueChange={handlePaymentMethodChange}>
                   <div className="flex items-center space-x-2 mb-4">
                     <RadioGroupItem value="cod" id="cod" />
-                    <Label htmlFor="cod" className="text-premium-700">Cash on Delivery</Label>
+                    <Label htmlFor="cod" className="text-orange-700">ক্যাশ অন ডেলিভারি</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="bkash" id="bkash" />
-                    <Label htmlFor="bkash" className="text-premium-700">bKash</Label>
+                    <Label htmlFor="bkash" className="text-orange-700">বিকাশ</Label>
                   </div>
                 </RadioGroup>
                 
                 {formData.paymentMethod === 'bkash' && (
                   <div className="mt-4">
-                    <Label htmlFor="bkashNumber" className="text-premium-700">bKash Number</Label>
+                    <Label htmlFor="bkashNumber" className="text-orange-700">বিকাশ নম্বর</Label>
                     <Input
                       id="bkashNumber"
                       name="bkashNumber"
                       value={formData.bkashNumber}
                       onChange={handleInputChange}
-                      placeholder="01XXXXXXXXX"
-                      className="border-premium-200 focus:border-premium-400"
+                      placeholder="০১XXXXXXXXX"
+                      className="border-orange-200 focus:border-orange-400"
                     />
                   </div>
                 )}
@@ -336,7 +366,7 @@ const Checkout = () => {
             </Card>
 
             {/* Terms and Conditions */}
-            <Card className="bg-white/90 backdrop-blur-xl border border-premium-200/50">
+            <Card className="bg-white/90 backdrop-blur-xl border border-orange-200/60">
               <CardContent className="pt-4">
                 <div className="flex items-start space-x-2">
                   <input
@@ -347,12 +377,12 @@ const Checkout = () => {
                     ref={termsRef}
                     className="mt-0.5"
                   />
-                  <Label htmlFor="terms" className="text-premium-700 text-sm">
-                    I agree to the terms and conditions and privacy policy
+                  <Label htmlFor="terms" className="text-orange-700 text-sm">
+                    আমি নিশ্চিত হয়ে এবং শর্তাবলী মান্য করে অর্ডার করছি । 
                   </Label>
                 </div>
                 {showTermsWarning && (
-                  <p className="text-red-500 text-sm mt-2">Please agree to the terms and conditions to proceed.</p>
+                  <p className="text-red-500 text-sm mt-2">আগাতে হলে শর্তাবলীতে সম্মতি দিন।</p>
                 )}
               </CardContent>
             </Card>
@@ -360,11 +390,11 @@ const Checkout = () => {
           
           {/* Order Summary - Mobile Optimized */}
           <div className="lg:col-span-1">
-            <Card className="bg-white/90 backdrop-blur-xl border border-premium-200/50 lg:sticky lg:top-24">
+            <Card className="bg-white/90 backdrop-blur-xl border border-orange-200/60 lg:sticky lg:top-24">
               <CardHeader>
-                <CardTitle className="text-premium-900 flex items-center gap-2">
+                <CardTitle className="text-orange-900 flex items-center gap-2">
                   <Truck className="w-5 h-5" />
-                  Your Order
+                  আপনার অর্ডার
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -376,7 +406,7 @@ const Checkout = () => {
                     const originalPrice = Number(item.price);
                     
                     return (
-                      <div key={item.id} className="flex items-center space-x-3 p-3 bg-premium-50 rounded-lg">
+                      <div key={item.id} className="flex items-center space-x-3 p-3 bg-orange-50 rounded-lg">
                         <div className="w-12 h-12 bg-white rounded-lg flex-shrink-0">
                           <img
                             src={
@@ -385,7 +415,7 @@ const Checkout = () => {
                               "/placeholder.jpg"
                             }
                             alt={item.name}
-                            className="w-full h-48 object-contain rounded-xl shadow bg-premium-50"
+                            className="w-full h-48 object-contain rounded-xl shadow bg-orange-50"
                             loading="lazy"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
@@ -395,15 +425,15 @@ const Checkout = () => {
                           />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-premium-900 truncate">{item.name}</h4>
+                          <h4 className="text-sm font-medium text-orange-900 truncate">{item.name}</h4>
                           <div className="flex items-center gap-2">
                             {hasDiscount ? (
                               <>
                                 <span className="text-xs text-gray-400 line-through">৳{new Intl.NumberFormat('en-US').format(originalPrice)}</span>
-                                <span className="text-sm font-bold text-emerald-600">৳{new Intl.NumberFormat('en-US').format(price)}</span>
+                                <span className="text-sm font-bold text-orange-600">৳{new Intl.NumberFormat('en-US').format(price)}</span>
                               </>
                             ) : (
-                              <span className="text-sm font-bold text-premium-600">৳{new Intl.NumberFormat('en-US').format(price)}</span>
+                              <span className="text-sm font-bold text-orange-600">৳{new Intl.NumberFormat('en-US').format(price)}</span>
                             )}
                           </div>
                         </div>
@@ -413,17 +443,17 @@ const Checkout = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => decreaseQty(item.id)}
-                            className="w-6 h-6 p-0 border-premium-300 text-premium-700"
+                            className="w-6 h-6 p-0 border-orange-300 text-orange-700"
                           >
                             <Minus className="w-3 h-3" />
                           </Button>
-                          <span className="text-sm font-medium text-premium-900 w-8 text-center">{item.quantity}</span>
+                          <span className="text-sm font-medium text-orange-900 w-8 text-center">{item.quantity}</span>
                           <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             onClick={() => increaseQty(item.id)}
-                            className="w-6 h-6 p-0 border-premium-300 text-premium-700"
+                            className="w-6 h-6 p-0 border-orange-300 text-orange-700"
                           >
                             <Plus className="w-3 h-3" />
                           </Button>
@@ -434,18 +464,18 @@ const Checkout = () => {
                 </div>
 
                 {/* Order Summary */}
-                <div className="border-t border-premium-200 pt-4 space-y-2">
-                  <div className="flex justify-between text-premium-700">
-                    <span>Subtotal</span>
+                <div className="border-t border-orange-200 pt-4 space-y-2">
+                  <div className="flex justify-between text-orange-700">
+                    <span>মোট</span>
                     <span>৳{new Intl.NumberFormat('en-US').format(totalProductCost)}</span>
                   </div>
-                  <div className="flex justify-between text-premium-700">
-                    <span>Delivery Fee</span>
+                  <div className="flex justify-between text-orange-700">
+                    <span>ডেলিভারি চার্জ</span>
                     <span>৳{new Intl.NumberFormat('en-US').format(deliveryCharge)}</span>
                   </div>
-                  <div className="border-t border-premium-200 pt-2">
-                    <div className="flex justify-between text-premium-900 font-bold text-lg">
-                      <span>Total</span>
+                  <div className="border-t border-orange-200 pt-2">
+                    <div className="flex justify-between text-orange-900 font-bold text-lg">
+                      <span>সর্বমোট</span>
                       <span>৳{new Intl.NumberFormat('en-US').format(total)}</span>
                     </div>
                   </div>
@@ -456,17 +486,17 @@ const Checkout = () => {
                   <Button 
                     type="submit" 
                     disabled={isSubmitting || !agreedToTerms}
-                    className="w-full bg-gradient-to-r from-premium-600 to-emerald-600 hover:from-premium-700 hover:to-emerald-700 text-white py-4 text-lg rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                    className="w-full bg-gradient-to-r from-orange-600 to-orange-600 hover:from-orange-700 hover:to-orange-700 text-white py-4 text-lg rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
                   >
                     {isSubmitting ? (
                       <div className="flex items-center">
                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                        Processing...
+                        প্রক্রিয়াকরণ হচ্ছে...
                       </div>
                     ) : (
                       <div className="flex items-center">
                         <Shield className="w-5 h-5 mr-2" />
-                        Place Order
+                        অর্ডার করুন
                       </div>
                     )}
                   </Button>
@@ -479,17 +509,17 @@ const Checkout = () => {
               <Button 
                 type="submit" 
                 disabled={isSubmitting || !agreedToTerms}
-                className="w-full bg-premium-600 hover:bg-premium-700 text-white py-4 text-lg rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 text-lg rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
               >
                 {isSubmitting ? (
                   <div className="flex items-center">
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                    Processing...
+                    প্রক্রিয়াকরণ হচ্ছে...
                   </div>
                 ) : (
                   <div className="flex items-center">
                     <Shield className="w-5 h-5 mr-2" />
-                    Confirm Order
+                    অর্ডার করুন
                   </div>
                 )}
               </Button>
@@ -502,18 +532,18 @@ const Checkout = () => {
           <Button 
             type="submit" 
             disabled={isSubmitting || !agreedToTerms}
-            className="w-full bg-premium-600 hover:bg-premium-700 text-white py-4 text-lg rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+            className="w-full bg-orange-600 hover:bg-orange-700 text-white py-4 text-lg rounded-xl font-semibold transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             onClick={handleSubmit}
           >
             {isSubmitting ? (
               <div className="flex items-center">
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                Processing...
+                প্রক্রিয়াকরণ হচ্ছে...
               </div>
             ) : (
               <div className="flex items-center">
                 <Shield className="w-5 h-5 mr-2" />
-                Confirm Order
+                অর্ডার করুন
               </div>
             )}
           </Button>
