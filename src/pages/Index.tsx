@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, Star, ArrowRight, User, Menu, Zap, Package, Shield, Truck, Gift, Percent, Clock, Award, Phone, Mail, MapPin, Home, Store, List, Search, Sparkles } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, limit, orderBy, query } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
@@ -12,7 +12,7 @@ import ProductCard from '@/components/ProductCard';
 import ProductDetailModal from '@/components/ProductDetailModal';
 import { getProductImageUrl } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { products as localProducts } from '@/data/products';
+// Remove local fallback to avoid showing fake placeholder products on home
 
 interface Product {
   id: string;
@@ -74,28 +74,26 @@ const Index = () => {
   useEffect(() => {
     const loadProducts = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, 'products'));
+        // Fast, ordered, and limited query for initial render
+        const productsRef = collection(db, 'products');
+        const q = query(productsRef, orderBy('createdAt', 'desc'), limit(24));
+        const querySnapshot = await getDocs(q);
         const firebaseProducts = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          const mainPrice = Number(data.mainPrice);
-          const product = { id: doc.id, ...data, mainPrice, price: mainPrice, offerPrice: data.offerPrice ?? null, mainImage: data.mainImageUrl };
-          console.log('Fetched product:', product);
-          return product;
+          const data = doc.data() as any;
+          const mainPrice = Number(data.mainPrice ?? data.price ?? 0);
+          return {
+            id: doc.id,
+            ...data,
+            mainPrice,
+            price: mainPrice,
+            offerPrice: data.offerPrice ?? null,
+            mainImage: data.mainImageUrl,
+          } as any;
         });
-        
-        // Combine Firebase products with local products, giving priority to Firebase
-        const allProducts = [...localProducts, ...firebaseProducts];
-        
-        // Remove duplicates based on name (keep Firebase version if duplicate)
-        const uniqueProducts = allProducts.filter((product, index, self) => 
-          index === self.findIndex(p => p.name === product.name)
-        );
-        
-        setProducts(uniqueProducts);
+        setProducts(firebaseProducts);
       } catch (error) {
         console.error('Error loading products:', error);
-        // Fallback to local products if Firebase fails
-        setProducts(localProducts);
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -207,17 +205,30 @@ const Index = () => {
       {/* Simple product grid like Shop (2 columns on mobile) */}
       <section className="px-4 py-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product as any}
-                handleAddToCart={handleAddToCart}
-                handleDirectOrder={handleDirectOrder}
-                onProductClick={handleProductClick}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="space-y-4">
+                  <div className="h-56 w-full rounded-2xl bg-orange-100 animate-pulse" />
+                  <div className="h-6 w-3/4 bg-orange-100 rounded animate-pulse" />
+                  <div className="h-8 w-1/2 bg-orange-100 rounded animate-pulse" />
+                  <div className="h-10 w-full bg-orange-100 rounded animate-pulse" />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product as any}
+                  handleAddToCart={handleAddToCart}
+                  handleDirectOrder={handleDirectOrder}
+                  onProductClick={handleProductClick}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

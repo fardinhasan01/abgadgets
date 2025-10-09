@@ -50,7 +50,7 @@ const OrderSuccess = () => {
             </span>
           </h1>
           <p className="text-xl text-gray-300 mb-2">Thank you for your purchase</p>
-          <p className="text-gray-400">Your order has been successfully placed and is being processed</p>
+          <p className="text-gray-400">Your order has been successfully placed and is being processed, আপনার অর্ডার টি কনফার্ম করা হলো, ধন্যবাদ! </p>
         </div>
 
         {/* Order Details */}
@@ -172,7 +172,7 @@ const OrderSuccess = () => {
         {/* Contact Info */}
         <div className="text-center mt-12 p-6 bg-gray-800/20 rounded-lg">
           <p className="text-gray-400 mb-2">Need help with your order?</p>
-          <p className="text-white">Contact us at <span className="text-blue-400">support@abgadgets.com</span> or call <span className="text-blue-400">(+880) 123-456-789</span></p>
+          <p className="text-white">Contact us at <span className="text-blue-400"> AB Gadgets FB page</span> or call <span className="text-blue-400">📌 WhatsApp: 01706003435</span></p>
         </div>
       </div>
     </div>

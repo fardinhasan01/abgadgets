@@ -406,9 +406,9 @@ const AddProduct: React.FC = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="space-y-8 bg-white/80 p-8 rounded-2xl border border-premium-200/60 backdrop-blur-lg max-w-2xl mx-auto shadow-xl">
+      <form onSubmit={handleSubmit} className="space-y-6 bg-white/80 p-6 rounded-2xl border border-premium-200/60 backdrop-blur-lg max-w-4xl mx-auto shadow-xl">
         <h2 className="text-2xl font-bold text-premium-700 mb-4">Add New Product</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <Label className="text-gray-700">Product Name</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter product name" required className="w-full bg-white border-premium-200 text-[#222] focus:border-premium-400 mt-1" />
@@ -476,7 +476,7 @@ const AddProduct: React.FC = () => {
               className="w-full bg-white border-premium-200 text-[#222] focus:border-premium-400 mt-1"
             />
           </div>
-          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="flex items-center gap-2 text-gray-700">
               <input type="checkbox" id="inStock" checked={inStock} onChange={(e) => setInStock(e.target.checked)} className="h-4 w-4 rounded border-premium-200 bg-white text-premium-600 focus:ring-premium-400" />
               <label htmlFor="inStock" className="cursor-pointer">{inStock ? 'In Stock' : 'Out of Stock'}</label>
@@ -491,7 +491,7 @@ const AddProduct: React.FC = () => {
           <Label className="text-gray-700">Description</Label>
           <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short description" rows={3} className="w-full bg-white border-premium-200 text-[#222] focus:border-premium-400 mt-1 rounded p-2" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <Label className="text-gray-700">Main Image</Label>
             <Input
@@ -569,7 +569,7 @@ const AddProduct: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <div>
             <Label className="text-gray-700">Video (optional)</Label>
             <Input

@@ -577,18 +577,18 @@ const AdminDashboard = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="border-gray-700">
-                    <TableHead className="text-gray-300">Image</TableHead>
-                    <TableHead className="text-gray-300">Name</TableHead>
-                    <TableHead className="text-gray-300">Price</TableHead>
-                    <TableHead className="text-gray-300">Stock</TableHead>
-                    <TableHead className="text-gray-300">Status</TableHead>
-                    <TableHead className="text-gray-300">Actions</TableHead>
+                    <TableHead className="text-gray-300 w-20">Image</TableHead>
+                    <TableHead className="text-gray-300 min-w-[200px]">Name</TableHead>
+                    <TableHead className="text-gray-300 w-24">Price</TableHead>
+                    <TableHead className="text-gray-300 w-20">Stock</TableHead>
+                    <TableHead className="text-gray-300 w-24">Status</TableHead>
+                    <TableHead className="text-gray-300 w-24">Actions</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {filteredAdminProducts.map((product) => (
                     <TableRow key={product.id} className="border-gray-700">
-                      <TableCell>
+                      <TableCell className="p-2">
                         <img 
                           src={
                             product.mainImageUrl ||
@@ -596,7 +596,7 @@ const AdminDashboard = () => {
                             "/placeholder.jpg"
                           } 
                           alt={product.name} 
-                          className="w-full h-48 object-contain rounded-xl shadow bg-premium-50"
+                          className="w-16 h-16 object-contain rounded-lg shadow bg-premium-50"
                           loading="lazy"
                           onError={(e) => {
                             // Fallback to placeholder if any error occurs
@@ -606,42 +606,42 @@ const AdminDashboard = () => {
                           }}
                         />
                       </TableCell>
-                      <TableCell className="text-white">
-                        <div>
-                          <div>{product.name}</div>
-                          {product.featured && <Badge className="bg-premium-500/20 text-premium-300 text-xs">Featured</Badge>}
+                      <TableCell className="text-white p-2">
+                        <div className="max-w-[200px]">
+                          <div className="text-sm font-medium truncate">{product.name}</div>
+                          {product.featured && <Badge className="bg-premium-500/20 text-premium-300 text-xs mt-1">Featured</Badge>}
                         </div>
                       </TableCell>
-                      <TableCell className="text-premium-400 font-semibold">
+                      <TableCell className="text-premium-400 font-semibold p-2 text-sm">
                         {(() => {
                           const price = getPrice(product as any);
                           return `৳${new Intl.NumberFormat('en-US').format(price)}`;
                         })()}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="p-2">
                         {product.inStock ? (
-                          <span className="inline-flex items-center gap-1 text-green-400 font-semibold">✅ In Stock</span>
+                          <span className="inline-flex items-center gap-1 text-green-400 font-semibold text-xs">✅ In Stock</span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-red-400 font-semibold">❌ Out of Stock</span>
+                          <span className="inline-flex items-center gap-1 text-red-400 font-semibold text-xs">❌ Out of Stock</span>
                         )}
                       </TableCell>
-                      <TableCell>
-                        <Badge className={product.inStock ? 'bg-green-500/20 text-green-300' : 'bg-red-500/20 text-red-300'}>
+                      <TableCell className="p-2">
+                        <Badge className={product.inStock ? 'bg-green-500/20 text-green-300 text-xs' : 'bg-red-500/20 text-red-300 text-xs'}>
                           {product.inStock ? 'In Stock' : 'Out of Stock'}
                         </Badge>
                       </TableCell>
-                      <TableCell>
-                        <div className="flex space-x-2">
-                          <Button size="sm" variant="outline" className="border-premium-400 text-premium-400 hover:bg-premium-400/10">
-                            <Edit className="w-4 h-4" />
+                      <TableCell className="p-2">
+                        <div className="flex space-x-1">
+                          <Button size="sm" variant="outline" className="border-premium-400 text-premium-400 hover:bg-premium-400/10 p-1 h-8 w-8">
+                            <Edit className="w-3 h-3" />
                           </Button>
                           <Button 
                             size="sm" 
                             variant="outline" 
-                            className="border-red-400 text-red-400 hover:bg-red-400/10"
+                            className="border-red-400 text-red-400 hover:bg-red-400/10 p-1 h-8 w-8"
                             onClick={() => deleteProduct(product.id)}
                           >
-                            <Trash2 className="w-4 h-4" />
+                            <Trash2 className="w-3 h-3" />
                           </Button>
                         </div>
                       </TableCell>

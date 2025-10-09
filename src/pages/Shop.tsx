@@ -140,31 +140,31 @@ const Shop = () => {
       {/* Animated Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-orange-50 via-orange-50 to-white animate-pulse-slow"></div>
       
-      {/* Header (shrunk) */}
-      <div className="bg-gradient-to-r from-orange-50/80 to-orange-100/80 pt-8 pb-12">
+      {/* Header (ultra compact) */}
+      <div className="bg-gradient-to-r from-orange-50/80 to-orange-100/80 pt-4 pb-5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 bg-clip-text text-transparent mb-3">
+          <h1 className="text-2xl md:text-3xl font-black text-orange-700 mb-1 drop-shadow-sm">
             সব পণ্য
           </h1>
-          <p className="text-orange-700/80 text-base md:text-lg font-medium max-w-2xl mx-auto mb-6">
+          <p className="text-orange-800 text-xs md:text-sm font-semibold max-w-2xl mx-auto mb-3">
             আমাদের সেরা সকল পণ্য এখনই দেখুন
           </p>
           <Button 
             onClick={() => navigate('/categories')}
-            className="bg-orange-600 hover:bg-orange-700 text-white font-semibold px-6 py-3 rounded-xl text-base"
+            className="bg-orange-600 hover:bg-orange-700 text-white font-bold px-4 py-2 rounded-lg text-xs shadow-lg"
           >
-            <List className="w-5 h-5 mr-2" />
+            <List className="w-3 h-3 mr-1" />
             ক্যাটাগরি দেখুন
-            <ArrowRight className="w-5 h-5 ml-2" />
+            <ArrowRight className="w-3 h-3 ml-1" />
           </Button>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 z-10 relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 z-10 relative">
         {/* Search and Filter */}
-        <Card className="bg-white/90 backdrop-blur-sm border-orange-200 rounded-2xl shadow-xl mb-8">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
+        <Card className="bg-white/90 backdrop-blur-sm border-orange-200 rounded-2xl shadow-xl mb-6">
+          <CardContent className="p-4">
+            <div className="flex flex-col md:flex-row gap-3">
               <div className="relative flex-grow">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <Input

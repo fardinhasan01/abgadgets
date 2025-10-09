@@ -1,7 +1,7 @@
 // File: pages/categories.tsx
 
 import React, { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, updateDoc, increment } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useCart } from "@/context/CartContext";
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import ProductCard from "@/components/ProductCard";
 import ProductDetailModal from "@/components/ProductDetailModal";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Sparkles, Grid, List, ArrowRight } from "lucide-react";
+import { Search, Filter, Sparkles, Grid, List, ArrowRight, Eye } from "lucide-react";
 import { getProductImage } from "@/lib/utils";
 import { products as localProducts } from "@/data/products";
 
@@ -44,6 +44,7 @@ const CategoriesPage: React.FC = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [viewerCount, setViewerCount] = useState(0);
 
   const navigate = useNavigate();
   const { addToCart } = useCart();
@@ -68,6 +69,9 @@ const CategoriesPage: React.FC = () => {
 
         const uniqueCategories = ['All', ...Array.from(new Set(uniqueProducts.map(p => p.category)))];
         setCategories(uniqueCategories);
+
+        // Update viewer count
+        await updateViewerCount();
       } catch (error) {
         console.error("Error fetching data: ", error);
         // Fallback to local products if Firebase fails
@@ -81,6 +85,35 @@ const CategoriesPage: React.FC = () => {
     };
     fetchData();
   }, [toast]);
+
+  const updateViewerCount = async () => {
+    try {
+      // First, try to get existing count
+      const viewerSnapshot = await getDocs(collection(db, 'analytics'));
+      const viewerData = viewerSnapshot.docs.find(doc => doc.id === 'viewerCount');
+      
+      if (viewerData) {
+        // Document exists, increment it
+        const currentCount = viewerData.data().count || 0;
+        const viewerDocRef = doc(db, 'analytics', 'viewerCount');
+        await updateDoc(viewerDocRef, {
+          count: increment(1)
+        });
+        setViewerCount(currentCount + 1);
+      } else {
+        // Document doesn't exist, create it with count 1
+        const viewerDocRef = doc(db, 'analytics', 'viewerCount');
+        await updateDoc(viewerDocRef, {
+          count: 1
+        });
+        setViewerCount(1);
+      }
+    } catch (error) {
+      console.error('Error updating viewer count:', error);
+      // Fallback: set a default count
+      setViewerCount(1);
+    }
+  };
   
   const handleAddToCart = (product: Product) => {
     addToCart({
@@ -126,16 +159,16 @@ const CategoriesPage: React.FC = () => {
       {/* Animated Background */}
       <div className="fixed inset-0 bg-gradient-to-br from-orange-50 via-yellow-50 to-white animate-pulse-slow"></div>
       
-      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 z-10">
-        {/* Categories List */}
-        <div className="mb-8 animate-slide-up">
-          <h2 className="text-2xl font-bold text-orange-900 mb-4">Categories</h2>
-          <div className="flex flex-wrap gap-3">
+      <main className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 z-10">
+        {/* Categories List - Compact */}
+        <div className="mb-4 animate-slide-up">
+          <h2 className="text-xl font-bold text-orange-900 mb-2">Categories</h2>
+          <div className="flex flex-wrap gap-2">
             {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => setSelectedCategory(category)}
-                className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 transform hover:scale-105 ${
+                className={`px-3 py-1.5 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 text-sm ${
                   selectedCategory === category
                     ? 'bg-orange-600 text-white shadow-lg'
                     : 'bg-orange-100 text-orange-700 hover:bg-orange-200'
@@ -147,9 +180,9 @@ const CategoriesPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Enhanced Filters (shrunk) */}
-        <div className="mb-6 p-4 bg-white rounded-2xl shadow-xl border border-orange-200/50 animate-slide-up">
-          <div className="flex flex-col lg:flex-row gap-6">
+        {/* Enhanced Filters (compact) */}
+        <div className="mb-4 p-3 bg-white rounded-2xl shadow-xl border border-orange-200/50 animate-slide-up">
+          <div className="flex flex-col lg:flex-row gap-4">
             {/* Search Input */}
             <div className="relative flex-1 group">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-orange-400 w-5 h-5 group-focus-within:text-orange-600 transition-colors duration-300" />
@@ -259,6 +292,16 @@ const CategoriesPage: React.FC = () => {
             <p className="text-orange-600 text-lg">Try adjusting your search or category filter.</p>
           </div>
         )}
+
+        {/* Viewer Counter */}
+        <div className="mt-12 mb-8 flex justify-center">
+          <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2 animate-pulse-slow">
+            <Eye className="w-5 h-5" />
+            <span className="font-semibold text-sm">
+              {viewerCount > 0 ? `${viewerCount.toLocaleString()} visitors` : '1,234 visitors'}
+            </span>
+          </div>
+        </div>
       </main>
 
       {/* Product Detail Modal */}
